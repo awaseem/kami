@@ -2,7 +2,6 @@
   "name": "node-typescript-boilerplate",
   "version": "0.0.0",
   "description": "Minimalistic boilerplate to quick-start Node.js development in TypeScript.",
-  "type": "module",
   "engines": {
     "node": ">= 16.13 <17"
   },
@@ -37,6 +36,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@slack/bolt": "^3.12.2",
+    "dotenv": "^16.0.3",
     "tslib": "~2.4"
   },
   "volta": {
