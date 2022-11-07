@@ -9,8 +9,17 @@ async function main() {
     signingSecret: process.env.SLACK_SIGNING_SECRET,
   });
 
-  await app.start(process.env.PORT || 3000);
-  console.log('⚡️ Bolt app is running!');
+  // The echo command simply echoes on command
+  app.command('/echo', async ({ command, ack, respond }) => {
+    // Acknowledge command request
+    await ack();
+
+    await respond(`${command.text}`);
+  });
+
+  const port = process.env.PORT ?? 3000;
+  await app.start(port);
+  console.log(`⚡️ Bolt app is running on port: ${port}`);
 }
 
 main();
