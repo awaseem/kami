@@ -1,21 +1,16 @@
 {
   "compilerOptions": {
-    "target": "ES2019",
-    "lib": ["ES2019"],
-    "moduleResolution": "Node",
-    "module": "CommonJS",
-    "rootDir": ".",
-    "outDir": "build",
-    "allowSyntheticDefaultImports": true,
+    "moduleResolution": "node",
+    "lib": ["es2018", "dom", "esnext"],
+    "esModuleInterop": true,
+    "allowJs": true,
+    "resolveJsonModule": true,
     "importHelpers": true,
     "alwaysStrict": true,
     "sourceMap": true,
-    "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitReturns": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "strict": true
+    "strict": true,
+    "outDir": "build",
+    "rootDir": "."
   },
   "include": ["src/**/*", "__tests__/**/*"]
 }

@@ -19,3 +19,17 @@ export function getSlackToken() {
 export function getPort() {
   return getEnvOrExit('PORT')
 }
+
+export function getNotionAuthUrl() {
+  return getEnvOrExit('NOTION_AUTH_URL')
+}
+
+export function getNotionBasicAuth() {
+  const clientID = getEnvOrExit('NOTION_OAUTH_CLIENT_ID')
+  const clientSecret = getEnvOrExit('NOTION_OAUTH_CLIENT_SECRET')
+  const token = `${clientID}:${clientSecret}`
+
+  const base64Encoded = Buffer.from(token).toString('base64')
+
+  return `Basic ${base64Encoded}`
+}

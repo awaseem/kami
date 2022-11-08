@@ -5,17 +5,19 @@
   "engines": {
     "node": ">= 16.13 <17"
   },
+  "type": "commonjs",
   "devDependencies": {
     "@types/jest": "~29.1",
     "@types/node": "~16",
+    "@types/node-fetch": "^2.6.2",
     "@typescript-eslint/eslint-plugin": "~5.39",
     "@typescript-eslint/parser": "~5.39",
+    "concurrently": "^7.5.0",
     "eslint": "~8.24",
     "eslint-config-prettier": "~8.5",
     "eslint-plugin-jest": "~27.1",
     "jest": "~29.1",
     "nodemon": "^2.0.20",
-    "concurrently": "^7.5.0",
     "prettier": "~2.7",
     "rimraf": "~3.0",
     "ts-jest": "~29.0",
@@ -41,6 +43,7 @@
   "dependencies": {
     "@slack/bolt": "^3.12.2",
     "dotenv": "^16.0.3",
+    "node-fetch": "^2.6.7",
     "tslib": "~2.4"
   },
   "volta": {
