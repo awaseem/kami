@@ -33,3 +33,7 @@ export function getNotionBasicAuth() {
 
   return `Basic ${base64Encoded}`
 }
+
+export function getNotionRedirectUrl() {
+  return getEnvOrExit('NOTION_REDIRECT_URL')
+}
