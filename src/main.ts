@@ -1,25 +1,15 @@
-import * as dotenv from 'dotenv';
-import { App } from '@slack/bolt';
+import * as dotenv from 'dotenv'
+import { createSlackApp } from './slack/app'
+import { getPort } from './utils/env'
 
 async function main() {
-  dotenv.config();
+  dotenv.config()
 
-  const app = new App({
-    token: process.env.SLACK_BOT_TOKEN,
-    signingSecret: process.env.SLACK_SIGNING_SECRET,
-  });
+  const port = getPort()
+  const app = createSlackApp()
 
-  // The echo command simply echoes on command
-  app.command('/echo', async ({ command, ack, respond }) => {
-    // Acknowledge command request
-    await ack();
-
-    await respond(`${command.text}`);
-  });
-
-  const port = process.env.PORT ?? 3000;
-  await app.start(port);
-  console.log(`⚡️ Bolt app is running on port: ${port}`);
+  await app.start(port)
+  console.log(`⚡️ Bolt app is running on port: ${port}`)
 }
 
-main();
+main()
