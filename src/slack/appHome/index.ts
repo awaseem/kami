@@ -6,7 +6,7 @@ const APP_HOME_OPEN_EVENT = 'app_home_opened'
 const NOTION_BUTTON_CLICKED = 'notion_button_clicked'
 
 export function createAppHomeHandlers(app: App, models: Models) {
-  app.event(APP_HOME_OPEN_EVENT, async ({ context, client, event }) => {
+  app.event(APP_HOME_OPEN_EVENT, async ({ context, client, event, logger }) => {
     try {
       const teamId = context.teamId
       if (!teamId) {
@@ -48,7 +48,7 @@ export function createAppHomeHandlers(app: App, models: Models) {
               type: 'section',
               text: {
                 type: 'mrkdwn',
-                text: 'Please continue the integration with notion before continuing. ****',
+                text: 'Please continue the integration with notion before continuing.',
               },
               accessory: {
                 type: 'button',
@@ -66,7 +66,7 @@ export function createAppHomeHandlers(app: App, models: Models) {
         },
       })
     } catch (error) {
-      logEventError(APP_HOME_OPEN_EVENT, error as Error)
+      logEventError(logger, APP_HOME_OPEN_EVENT, error as Error)
     }
   })
 

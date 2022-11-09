@@ -16,6 +16,10 @@ export function getSlackToken() {
   return getEnvOrExit('SLACK_BOT_TOKEN')
 }
 
+export function getSlackAppId() {
+  return getEnvOrExit('SLACK_APP_ID')
+}
+
 export function getPort() {
   return getEnvOrExit('PORT')
 }

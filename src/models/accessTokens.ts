@@ -1,9 +1,17 @@
 import { createRedisStore } from './store'
 
-export function createAccessTokensModel() {
-  const notionAccessTokenStore = createRedisStore('notion|access|tokens')
+const notionAccessTokenStore = createRedisStore('notion|access|tokens')
 
+async function isValidNotionInstall(teamId: string): Promise<boolean> {
+  const accessToken = await notionAccessTokenStore.get(teamId)
+  return Boolean(accessToken)
+}
+
+export function createAccessTokensModel() {
   return Object.freeze({
-    notionAccessTokenStore,
+    notionAccessTokenStore: {
+      ...notionAccessTokenStore,
+      isValidNotionInstall,
+    },
   })
 }
