@@ -1,5 +1,6 @@
 import type { App } from '@slack/bolt'
 import { Models } from '../../models'
+import { logEventError } from '../../utils/logger'
 
 const APP_HOME_OPEN_EVENT = 'app_home_opened'
 const NOTION_BUTTON_CLICKED = 'notion_button_clicked'
@@ -65,7 +66,7 @@ export function createAppHomeHandlers(app: App, models: Models) {
         },
       })
     } catch (error) {
-      console.log('Error trying to load app home', error)
+      logEventError(APP_HOME_OPEN_EVENT, error as Error)
     }
   })
 
