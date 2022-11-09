@@ -23,7 +23,7 @@ export function createAppHomeHandlers(app: App, models: Models) {
               type: 'header',
               text: {
                 type: 'plain_text',
-                text: 'Welcome 👋',
+                text: 'Hello 👋',
                 emoji: true,
               },
             },
@@ -31,7 +31,15 @@ export function createAppHomeHandlers(app: App, models: Models) {
               type: 'section',
               text: {
                 type: 'plain_text',
-                text: `Welcome to Kami 👋 We aspire to keep information out of the deep abyss of Slack.`,
+                text: `Welcome to Kami. We aspire to keep information out of the deep abyss of Slack.`,
+                emoji: true,
+              },
+            },
+            {
+              type: 'header',
+              text: {
+                type: 'plain_text',
+                text: 'Integration 🔌',
                 emoji: true,
               },
             },
@@ -39,7 +47,7 @@ export function createAppHomeHandlers(app: App, models: Models) {
               type: 'section',
               text: {
                 type: 'mrkdwn',
-                text: 'Please continue the integration with notion before continuing.',
+                text: 'Please continue the integration with notion before continuing. ****',
               },
               accessory: {
                 type: 'button',

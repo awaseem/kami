@@ -8,7 +8,7 @@ export function createNotionAuthRoute(
   receiver.router.get('/auth/notion', async (req, res) => {
     const { code, state } = req.query
     if (!code || !state) {
-      res.sendStatus(400)
+      res.status(400).send('Failed to create proper integration with notion.')
       return
     }
 
