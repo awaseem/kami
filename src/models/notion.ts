@@ -1,5 +1,9 @@
 import fetch from 'node-fetch'
-import { getNotionBasicAuth, getNotionRedirectUrl } from '../utils/env'
+import {
+  getNotionAuthUrl,
+  getNotionBasicAuth,
+  getNotionRedirectUrl,
+} from '../utils/env'
 
 const NOTION_AUTH_EXCHANGE_ROUTE = 'https://api.notion.com/v1/oauth/token'
 
@@ -23,8 +27,18 @@ async function oauthExchange(code: string) {
   return data.access_token
 }
 
+function getNotionOauthUrl(teamId: string) {
+  const baseUrl = getNotionAuthUrl()
+  const redirectUri = getNotionRedirectUrl()
+
+  return `${baseUrl}&redirect_uri=${encodeURIComponent(
+    redirectUri,
+  )}&state=${teamId}`
+}
+
 export function createNotionModels() {
   return {
     oauthExchange,
+    getNotionOauthUrl,
   }
 }

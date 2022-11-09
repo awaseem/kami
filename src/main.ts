@@ -1,10 +1,10 @@
 import dotenv from 'dotenv'
+dotenv.config()
+
 import { createSlackApp } from './slack/app'
 import { getNotionAuthUrl, getPort } from './utils/env'
 
 async function main() {
-  dotenv.config()
-
   const port = getPort()
   const app = createSlackApp()
 

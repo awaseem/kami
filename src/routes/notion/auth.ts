@@ -6,15 +6,18 @@ export function createNotionAuthRoute(
   models: Models,
 ) {
   receiver.router.get('/auth/notion', async (req, res) => {
-    const { code } = req.query
-    if (!code) {
+    const { code, state } = req.query
+    if (!code || !state) {
       res.sendStatus(400)
       return
     }
 
     const accessToken = await models.notion.oauthExchange(code.toString())
-    models.accessTokens.notionAccessTokenStore.set('', accessToken)
+    await models.accessTokens.notionAccessTokenStore.set(
+      state.toString(),
+      accessToken,
+    )
 
-    res.sendStatus(200)
+    res.status(200).send('Notion integration complete!')
   })
 }
