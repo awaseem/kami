@@ -3,7 +3,7 @@ import { getNotionBasicAuth, getNotionRedirectUrl } from '../utils/env'
 
 const NOTION_AUTH_EXCHANGE_ROUTE = 'https://api.notion.com/v1/oauth/token'
 
-export async function oauthExchange(code: string) {
+async function oauthExchange(code: string) {
   const body = {
     grant_type: 'authorization_code',
     code,
@@ -21,4 +21,10 @@ export async function oauthExchange(code: string) {
   const data = (await response.json()) as { access_token: string }
 
   return data.access_token
+}
+
+export function createNotionModels() {
+  return {
+    oauthExchange,
+  }
 }

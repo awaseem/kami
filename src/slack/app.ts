@@ -1,10 +1,12 @@
 import { App } from '@slack/bolt'
+import { createModels } from '../models'
 import { createRouter } from '../routes'
 import { getSlackSigningSecret, getSlackToken } from '../utils/env'
 import { createAppHomeHandlers } from './appHome'
 
 export function createSlackApp() {
-  const receiver = createRouter()
+  const models = createModels()
+  const receiver = createRouter(models)
 
   const app = new App({
     token: getSlackToken(),

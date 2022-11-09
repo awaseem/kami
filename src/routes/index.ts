@@ -1,24 +1,15 @@
 import { ExpressReceiver } from '@slack/bolt'
-import { oauthExchange } from '../models/notion'
+import { Models } from '../models'
 import { getSlackSigningSecret } from '../utils/env'
+import { createNotionAuthRoute } from './notion/auth'
 
-export function createRouter() {
+export function createRouter(models: Models) {
   const receiver = new ExpressReceiver({
     signingSecret: getSlackSigningSecret(),
   })
 
-  receiver.router.get('/auth/notion', async (req, res) => {
-    const { code } = req.query
-    if (!code) {
-      res.sendStatus(400)
-      return
-    }
-
-    // TODO store access token
-    const accessToken = await oauthExchange(code.toString())
-
-    res.sendStatus(200)
-  })
+  // Register routes
+  createNotionAuthRoute(receiver, models)
 
   return receiver
 }

@@ -37,3 +37,11 @@ export function getNotionBasicAuth() {
 export function getNotionRedirectUrl() {
   return getEnvOrExit('NOTION_REDIRECT_URL')
 }
+
+export function getRedisUrl() {
+  return getEnvOrExit('REDIS_URL')
+}
+
+export function getRedisToken() {
+  return getEnvOrExit('REDIS_TOKEN')
+}
