@@ -10,7 +10,7 @@ import { createRedisStore } from './store'
 
 const NOTION_AUTH_EXCHANGE_ROUTE = 'https://api.notion.com/v1/oauth/token'
 
-const notionRedisStore = createRedisStore('notion|pages')
+const notionRootPageRedisStore = createRedisStore('notion|root|page')
 
 function createNotionClient(accessToken: string) {
   return new Client({
@@ -61,7 +61,62 @@ async function getNotionPage(accessToken: string, pageId: string) {
 }
 
 async function saveRootPage(teamId: string, pageId: string) {
-  await notionRedisStore.set(teamId, pageId)
+  await notionRootPageRedisStore.set(teamId, pageId)
+}
+
+async function createAcronymDatabase(accessToken: string, parentId: string) {
+  try {
+    const notion = createNotionClient(accessToken)
+
+    await notion.databases.create({
+      parent: {
+        page_id: parentId,
+      },
+      icon: { emoji: '📕' },
+      title: [
+        {
+          type: 'text',
+          text: {
+            content: 'Acronym List',
+            link: null,
+          },
+        },
+      ],
+      description: [
+        {
+          type: 'text',
+          text: {
+            content: 'All the acronyms Kami stores and uses.',
+            link: null,
+          },
+        },
+      ],
+      properties: {
+        Acronym: {
+          type: 'title',
+          title: {},
+        },
+        Definition: {
+          type: 'rich_text',
+          rich_text: {},
+        },
+        ['Add by (Slack ID)']: {
+          type: 'url',
+          url: {},
+        },
+        ['Created at']: {
+          type: 'created_time',
+          created_time: {},
+        },
+        ['Last edited']: {
+          type: 'last_edited_time',
+          last_edited_time: {},
+        },
+      },
+    })
+  } catch (error) {
+    logError(error as Error)
+  }
 }
 
 export function createNotionModels() {
@@ -70,5 +125,6 @@ export function createNotionModels() {
     getNotionOauthUrl,
     getNotionPage,
     saveRootPage,
+    createAcronymDatabase,
   }
 }
