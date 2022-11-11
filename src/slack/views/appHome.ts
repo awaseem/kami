@@ -1,6 +1,7 @@
 import type { WebClient } from '@slack/web-api'
 
 export const NOTION_AUTH_BUTTON_CLICKED = 'notion_auth_button_clicked'
+export const NOTION_SETUP_PAGE_ID_BUTTON_CLICKED = 'notion_setup_page_id_button'
 
 export async function createAppHome(
   client: WebClient,
@@ -52,6 +53,73 @@ export async function createAppHome(
             value: 'click_notion',
             url: notionConnectUrl,
             action_id: NOTION_AUTH_BUTTON_CLICKED,
+          },
+        },
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: 'Please select a page that Kami can use to store information',
+          },
+          accessory: {
+            type: 'button',
+            text: {
+              type: 'plain_text',
+              text: 'Select page',
+              emoji: true,
+            },
+            action_id: NOTION_SETUP_PAGE_ID_BUTTON_CLICKED,
+          },
+        },
+      ],
+    },
+  })
+}
+
+export const SETUP_PAGE_CALLBACK_ID = 'setup_page_callback_id'
+export const SETUP_PAGE_URL_INPUT = 'setup_page_url_input'
+
+export function createSetupPageModel(client: WebClient, triggerId: string) {
+  return client.views.open({
+    trigger_id: triggerId,
+    view: {
+      type: 'modal',
+      callback_id: SETUP_PAGE_CALLBACK_ID,
+      title: {
+        type: 'plain_text',
+        text: 'Select Page',
+        emoji: true,
+      },
+      submit: {
+        type: 'plain_text',
+        text: 'Submit',
+        emoji: true,
+      },
+      close: {
+        type: 'plain_text',
+        text: 'Cancel',
+        emoji: true,
+      },
+      blocks: [
+        {
+          type: 'section',
+          text: {
+            type: 'plain_text',
+            text: 'Paste a valid notion url from your workspace',
+            emoji: true,
+          },
+        },
+        {
+          type: 'input',
+          block_id: SETUP_PAGE_URL_INPUT,
+          element: {
+            type: 'plain_text_input',
+            action_id: 'plain_text_input-action',
+          },
+          label: {
+            type: 'plain_text',
+            text: 'Notion page URL',
+            emoji: true,
           },
         },
       ],
