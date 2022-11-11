@@ -61,62 +61,59 @@ export function createAppHomeHandlers(app: App, models: Models) {
     },
   )
 
-  app.view(
-    SETUP_PAGE_CALLBACK_ID,
-    async ({ ack, context, view, client, logger, respond }) => {
-      try {
-        const teamId = context.teamId
-        if (!teamId) {
-          throw new Error('invalid team id.')
-        }
-
-        const url =
-          view.state.values[SETUP_PAGE_URL_INPUT]?.[SETUP_PAGE_URL_INPUT_ACTION]
-            ?.value
-
-        if (!url) {
-          await ack({
-            response_action: 'errors',
-            errors: {
-              [SETUP_PAGE_URL_INPUT]: 'Please enter a url',
-            },
-          })
-          return
-        }
-
-        const pageId = getPageIdFromNotionUrl(url)
-        if (!pageId) {
-          await ack({
-            response_action: 'errors',
-            errors: {
-              [SETUP_PAGE_URL_INPUT]:
-                'No page id found, please make sure you have a valid notion page url',
-            },
-          })
-          return
-        }
-
-        const accessToken =
-          await models.accessTokens.notionAccessTokenStore.getAccessTokenOrThrow(
-            teamId,
-          )
-        const page = await models.notion.getNotionPage(accessToken, pageId)
-        if (!page) {
-          await ack({
-            response_action: 'errors',
-            errors: {
-              [SETUP_PAGE_URL_INPUT]:
-                'No page found, please ensure that Kami has access to this page and it is in your workspace',
-            },
-          })
-          return
-        }
-
-        await ack()
-        await models.notion.saveRootPage(teamId, page.id)
-      } catch (error) {
-        logEventError(logger, SETUP_PAGE_CALLBACK_ID, error as Error)
+  app.view(SETUP_PAGE_CALLBACK_ID, async ({ ack, context, view, logger }) => {
+    try {
+      const teamId = context.teamId
+      if (!teamId) {
+        throw new Error('invalid team id.')
       }
-    },
-  )
+
+      const url =
+        view.state.values[SETUP_PAGE_URL_INPUT]?.[SETUP_PAGE_URL_INPUT_ACTION]
+          ?.value
+
+      if (!url) {
+        await ack({
+          response_action: 'errors',
+          errors: {
+            [SETUP_PAGE_URL_INPUT]: 'Please enter a url',
+          },
+        })
+        return
+      }
+
+      const pageId = getPageIdFromNotionUrl(url)
+      if (!pageId) {
+        await ack({
+          response_action: 'errors',
+          errors: {
+            [SETUP_PAGE_URL_INPUT]:
+              'No page id found, please make sure you have a valid notion page url',
+          },
+        })
+        return
+      }
+
+      const accessToken =
+        await models.accessTokens.notionAccessTokenStore.getAccessTokenOrThrow(
+          teamId,
+        )
+      const page = await models.notion.getNotionPage(accessToken, pageId)
+      if (!page) {
+        await ack({
+          response_action: 'errors',
+          errors: {
+            [SETUP_PAGE_URL_INPUT]:
+              'No page found, please ensure that Kami has access to this page and it is in your workspace',
+          },
+        })
+        return
+      }
+
+      await ack()
+      await models.notion.saveRootPage(teamId, page.id)
+    } catch (error) {
+      logEventError(logger, SETUP_PAGE_CALLBACK_ID, error as Error)
+    }
+  })
 }
