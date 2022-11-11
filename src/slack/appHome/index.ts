@@ -112,7 +112,7 @@ export function createAppHomeHandlers(app: App, models: Models) {
 
       await ack()
       await models.notion.saveRootPage(teamId, page.id)
-      await models.notion.createAcronymDatabase(accessToken, page.id)
+      await models.notion.createAcronymDatabase(accessToken, teamId, page.id)
     } catch (error) {
       logEventError(logger, SETUP_PAGE_CALLBACK_ID, error as Error)
     }
