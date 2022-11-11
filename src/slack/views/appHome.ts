@@ -78,6 +78,7 @@ export async function createAppHome(
 
 export const SETUP_PAGE_CALLBACK_ID = 'setup_page_callback_id'
 export const SETUP_PAGE_URL_INPUT = 'setup_page_url_input'
+export const SETUP_PAGE_URL_INPUT_ACTION = 'setup_page_url_input_action'
 
 export function createSetupPageModel(client: WebClient, triggerId: string) {
   return client.views.open({
@@ -114,7 +115,7 @@ export function createSetupPageModel(client: WebClient, triggerId: string) {
           block_id: SETUP_PAGE_URL_INPUT,
           element: {
             type: 'plain_text_input',
-            action_id: 'plain_text_input-action',
+            action_id: SETUP_PAGE_URL_INPUT_ACTION,
           },
           label: {
             type: 'plain_text',

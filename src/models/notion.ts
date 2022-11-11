@@ -5,8 +5,12 @@ import {
   getNotionBasicAuth,
   getNotionRedirectUrl,
 } from '../utils/env'
+import { logError } from '../utils/logger'
+import { createRedisStore } from './store'
 
 const NOTION_AUTH_EXCHANGE_ROUTE = 'https://api.notion.com/v1/oauth/token'
+
+const notionRedisStore = createRedisStore('notion|pages')
 
 function createNotionClient(accessToken: string) {
   return new Client({
@@ -45,13 +49,26 @@ function getNotionOauthUrl(teamId: string) {
   )}&state=${teamId}`
 }
 
-async function createAcronymDatabase(accessToken: string, teamId: string) {
-  const notion = createNotionClient(accessToken)
+async function getNotionPage(accessToken: string, pageId: string) {
+  try {
+    const notion = createNotionClient(accessToken)
+
+    return await notion.pages.retrieve({ page_id: pageId })
+  } catch (error) {
+    logError(error as Error)
+    return undefined
+  }
+}
+
+async function saveRootPage(teamId: string, pageId: string) {
+  await notionRedisStore.set(teamId, pageId)
 }
 
 export function createNotionModels() {
   return {
     oauthExchange,
     getNotionOauthUrl,
+    getNotionPage,
+    saveRootPage,
   }
 }
