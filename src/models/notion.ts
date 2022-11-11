@@ -1,3 +1,4 @@
+import { Client, LogLevel } from '@notionhq/client'
 import fetch from 'node-fetch'
 import {
   getNotionAuthUrl,
@@ -6,6 +7,14 @@ import {
 } from '../utils/env'
 
 const NOTION_AUTH_EXCHANGE_ROUTE = 'https://api.notion.com/v1/oauth/token'
+
+function createNotionClient(accessToken: string) {
+  return new Client({
+    auth: accessToken,
+    logLevel:
+      process.env.NODE_ENV === 'production' ? LogLevel.DEBUG : undefined,
+  })
+}
 
 async function oauthExchange(code: string) {
   const body = {
@@ -34,6 +43,10 @@ function getNotionOauthUrl(teamId: string) {
   return `${baseUrl}&redirect_uri=${encodeURIComponent(
     redirectUri,
   )}&state=${teamId}`
+}
+
+async function createAcronymDatabase(accessToken: string, teamId: string) {
+  const notion = createNotionClient(accessToken)
 }
 
 export function createNotionModels() {

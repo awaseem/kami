@@ -41,11 +41,13 @@
   "author": "Jakub Synowiec <jsynowiec@users.noreply.github.com>",
   "license": "Apache-2.0",
   "dependencies": {
+    "@notionhq/client": "^2.2.2",
     "@slack/bolt": "^3.12.2",
     "@upstash/redis": "^1.16.0",
     "dotenv": "^16.0.3",
     "node-fetch": "^2.6.7",
-    "tslib": "~2.4"
+    "tslib": "~2.4",
+    "yup": "^0.32.11"
   },
   "volta": {
     "node": "16.17.0"

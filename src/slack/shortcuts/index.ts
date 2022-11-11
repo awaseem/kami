@@ -39,7 +39,7 @@ export function createShortcutHandlers(app: App, models: Models) {
           )
         }
 
-        const result = await createAcronymModal(client, triggerId)
+        await createAcronymModal(client, triggerId)
       } catch (error) {
         logEventError(logger, CREATE_ACRONYM_SHORTCUT, error as Error)
       }
