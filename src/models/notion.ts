@@ -1,5 +1,5 @@
-import { Client, LogLevel } from '@notionhq/client'
 import fetch from 'node-fetch'
+import { createNotionClient } from '../lib/notion'
 import {
   getNotionAuthUrl,
   getNotionBasicAuth,
@@ -12,14 +12,6 @@ const NOTION_AUTH_EXCHANGE_ROUTE = 'https://api.notion.com/v1/oauth/token'
 
 const notionRootPageRedisStore = createRedisStore('notion|root|page')
 const notionAcronymStore = createRedisStore('notion|acronym|page')
-
-function createNotionClient(accessToken: string) {
-  return new Client({
-    auth: accessToken,
-    logLevel:
-      process.env.NODE_ENV === 'production' ? LogLevel.DEBUG : undefined,
-  })
-}
 
 async function oauthExchange(code: string) {
   const body = {
@@ -126,8 +118,13 @@ async function createAcronymDatabase(
   }
 }
 
-export async function getAcronymPageId(teamId: string) {
-  return notionAcronymStore.get(teamId)
+export async function getAcronymPageIdOrThrow(teamId: string) {
+  const pageId = await notionAcronymStore.get(teamId)
+  if (!pageId) {
+    throw new Error('no page id found')
+  }
+
+  return pageId
 }
 
 export function createNotionModels() {
@@ -137,6 +134,6 @@ export function createNotionModels() {
     getNotionPage,
     saveRootPage,
     createAcronymDatabase,
-    getAcronymPageId,
+    getAcronymPageIdOrThrow,
   }
 }

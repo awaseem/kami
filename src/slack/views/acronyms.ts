@@ -4,6 +4,10 @@ export const CREATE_ACRONYM_CALLBACK_ID = 'create_acronym_callback'
 export const CREATE_ACRONYM_INPUT_LABEL = 'create_acronym_input_label'
 export const CREATE_ACRONYM_INPUT_DESCRIPTION =
   'create_acronym_input_description'
+export const CREATE_ACRONYM_INPUT_LABEL_ACTION =
+  'create_acronym_input_label_action'
+export const CREATE_ACRONYM_INPUT_DESCRIPTION_ACTION =
+  'create_acronym_input_description_action'
 
 export async function createAcronymModal(client: WebClient, triggerId: string) {
   return client.views.open({
@@ -40,7 +44,7 @@ export async function createAcronymModal(client: WebClient, triggerId: string) {
           block_id: CREATE_ACRONYM_INPUT_LABEL,
           element: {
             type: 'plain_text_input',
-            action_id: 'plain_text_input-action',
+            action_id: CREATE_ACRONYM_INPUT_LABEL_ACTION,
           },
           label: {
             type: 'plain_text',
@@ -54,11 +58,11 @@ export async function createAcronymModal(client: WebClient, triggerId: string) {
           element: {
             type: 'plain_text_input',
             multiline: true,
-            action_id: 'plain_text_input-action',
+            action_id: CREATE_ACRONYM_INPUT_DESCRIPTION_ACTION,
           },
           label: {
             type: 'plain_text',
-            text: 'Description',
+            text: 'Definition',
             emoji: true,
           },
         },

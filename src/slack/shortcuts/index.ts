@@ -5,6 +5,10 @@ import { logEventError } from '../../utils/logger'
 import {
   createAcronymModal,
   CREATE_ACRONYM_CALLBACK_ID,
+  CREATE_ACRONYM_INPUT_DESCRIPTION,
+  CREATE_ACRONYM_INPUT_DESCRIPTION_ACTION,
+  CREATE_ACRONYM_INPUT_LABEL,
+  CREATE_ACRONYM_INPUT_LABEL_ACTION,
 } from '../views/acronyms'
 import { ErrorModel } from '../views/error'
 
@@ -48,12 +52,43 @@ export function createShortcutHandlers(app: App, models: Models) {
 
   app.view(
     CREATE_ACRONYM_CALLBACK_ID,
-    async ({ ack, context, view, client, logger }) => {
+    async ({ ack, context, view, logger, body }) => {
       try {
+        const teamId = context.teamId
+        const userId = body.user.id
+
+        if (!teamId) {
+          throw new Error('invalid team id.')
+        }
+
+        const acronym =
+          view.state.values[CREATE_ACRONYM_INPUT_LABEL]?.[
+            CREATE_ACRONYM_INPUT_LABEL_ACTION
+          ]?.value
+        const definition =
+          view.state.values[CREATE_ACRONYM_INPUT_DESCRIPTION]?.[
+            CREATE_ACRONYM_INPUT_DESCRIPTION_ACTION
+          ]?.value
+
+        if (!acronym || !definition) {
+          throw new Error('Failed to find acronym or definition')
+        }
+
         await ack()
 
-        console.log('CONTEXT', context)
-        console.log('VIEW', view)
+        const accessToken =
+          await models.accessTokens.notionAccessTokenStore.getAccessTokenOrThrow(
+            teamId,
+          )
+        const parentPage = await models.notion.getAcronymPageIdOrThrow(teamId)
+
+        await models.acronyms.createAcronym(
+          accessToken,
+          parentPage,
+          acronym,
+          definition,
+          userId,
+        )
       } catch (error) {
         logEventError(logger, CREATE_ACRONYM_CALLBACK_ID, error as Error)
       }
