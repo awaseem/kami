@@ -57,68 +57,7 @@ async function saveRootPage(teamId: string, pageId: string) {
   await notionRootPageRedisStore.set(teamId, pageId)
 }
 
-async function createAcronymDatabase(
-  accessToken: string,
-  teamId: string,
-  parentId: string,
-) {
-  try {
-    const notion = createNotionClient(accessToken)
-
-    const response = await notion.databases.create({
-      parent: {
-        page_id: parentId,
-      },
-      icon: { emoji: '📕' },
-      title: [
-        {
-          type: 'text',
-          text: {
-            content: 'Acronym List',
-            link: null,
-          },
-        },
-      ],
-      description: [
-        {
-          type: 'text',
-          text: {
-            content: 'All the acronyms Kami stores and uses.',
-            link: null,
-          },
-        },
-      ],
-      properties: {
-        Acronym: {
-          type: 'title',
-          title: {},
-        },
-        Definition: {
-          type: 'rich_text',
-          rich_text: {},
-        },
-        ['Add by (Slack ID)']: {
-          type: 'url',
-          url: {},
-        },
-        ['Created at']: {
-          type: 'created_time',
-          created_time: {},
-        },
-        ['Last edited']: {
-          type: 'last_edited_time',
-          last_edited_time: {},
-        },
-      },
-    })
-
-    await notionAcronymStore.set(teamId, response.id)
-  } catch (error) {
-    logError(error as Error)
-  }
-}
-
-export async function getAcronymPageIdOrThrow(teamId: string) {
+async function getAcronymPageIdOrThrow(teamId: string) {
   const pageId = await notionAcronymStore.get(teamId)
   if (!pageId) {
     throw new Error('no page id found')
@@ -127,13 +66,17 @@ export async function getAcronymPageIdOrThrow(teamId: string) {
   return pageId
 }
 
+async function setAcronymPageId(teamId: string, pageId: string) {
+  await notionAcronymStore.set(teamId, pageId)
+}
+
 export function createNotionModels() {
   return {
     oauthExchange,
     getNotionOauthUrl,
     getNotionPage,
     saveRootPage,
-    createAcronymDatabase,
     getAcronymPageIdOrThrow,
+    setAcronymPageId,
   }
 }
