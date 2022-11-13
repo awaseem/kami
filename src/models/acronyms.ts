@@ -2,13 +2,23 @@ import { createNotionClient } from '../lib/notion'
 import { getUserLink } from '../utils/links'
 import { logError } from '../utils/logger'
 
-async function createAcronym(
-  accessToken: string,
-  parentPageId: string,
-  acronym: string,
-  definition: string,
-  userId: string,
-) {
+export interface CreateAcronymArgs {
+  accessToken: string
+  parentPageId: string
+  acronym: string
+  definition: string
+  userId: string
+  username: string
+}
+
+async function createAcronym({
+  accessToken,
+  parentPageId,
+  acronym,
+  definition,
+  userId,
+  username,
+}: CreateAcronymArgs) {
   try {
     const notion = createNotionClient(accessToken)
 
@@ -36,7 +46,16 @@ async function createAcronym(
           ],
         },
         ['Add by (Slack ID)']: {
-          url: getUserLink(userId),
+          rich_text: [
+            {
+              text: {
+                content: username,
+                link: {
+                  url: getUserLink(userId),
+                },
+              },
+            },
+          ],
         },
       },
     })
@@ -45,11 +64,7 @@ async function createAcronym(
   }
 }
 
-async function createAcronymDatabase(
-  accessToken: string,
-  teamId: string,
-  parentId: string,
-) {
+async function createAcronymDatabase(accessToken: string, parentId: string) {
   try {
     const notion = createNotionClient(accessToken)
 

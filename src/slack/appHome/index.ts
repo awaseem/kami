@@ -111,11 +111,10 @@ export function createAppHomeHandlers(app: App, models: Models) {
       }
 
       await ack()
-      await models.notion.saveRootPage(teamId, page.id)
 
+      await models.notion.saveRootPage(teamId, page.id)
       const response = await models.acronyms.createAcronymDatabase(
         accessToken,
-        teamId,
         page.id,
       )
       if (response) {

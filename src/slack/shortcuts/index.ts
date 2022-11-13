@@ -55,7 +55,7 @@ export function createShortcutHandlers(app: App, models: Models) {
     async ({ ack, context, view, logger, body }) => {
       try {
         const teamId = context.teamId
-        const userId = body.user.id
+        const user = body.user
 
         if (!teamId) {
           throw new Error('invalid team id.')
@@ -80,15 +80,16 @@ export function createShortcutHandlers(app: App, models: Models) {
           await models.accessTokens.notionAccessTokenStore.getAccessTokenOrThrow(
             teamId,
           )
-        const parentPage = await models.notion.getAcronymPageIdOrThrow(teamId)
+        const parentPageId = await models.notion.getAcronymPageIdOrThrow(teamId)
 
-        await models.acronyms.createAcronym(
+        await models.acronyms.createAcronym({
           accessToken,
-          parentPage,
+          parentPageId,
           acronym,
           definition,
-          userId,
-        )
+          userId: user.id,
+          username: user.name,
+        })
       } catch (error) {
         logEventError(logger, CREATE_ACRONYM_CALLBACK_ID, error as Error)
       }
