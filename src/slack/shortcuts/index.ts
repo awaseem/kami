@@ -1,7 +1,14 @@
-import type { App } from '@slack/bolt'
+import type {
+  AllMiddlewareArgs,
+  App,
+  SlackShortcut,
+  SlackShortcutMiddlewareArgs,
+} from '@slack/bolt'
+import { StringIndexed } from '@slack/bolt/dist/types/helpers'
 import type { Models } from '../../models'
 import { getAppHomeDeepLink } from '../../utils/links'
 import { logEventError } from '../../utils/logger'
+import { getFirstFoundAcronym, parseMessageBlocks } from '../../utils/messages'
 import {
   createAcronymModal,
   CREATE_ACRONYM_CALLBACK_ID,
@@ -12,43 +19,68 @@ import {
 } from '../views/acronyms'
 import { ErrorModel } from '../views/error'
 
-const CREATE_ACRONYM_SHORTCUT = 'define_acronym'
+type SlackShortcutArg = SlackShortcutMiddlewareArgs<SlackShortcut> &
+  AllMiddlewareArgs<StringIndexed>
+
+const CREATE_ACRONYM_SHORTCUT_GLOBAL = 'define_acronym'
+const CREATE_ACRONYM_SHORTCUT_MESSAGE = 'create_acronym_message_shortcut'
 
 export function createShortcutHandlers(app: App, models: Models) {
-  app.shortcut(
-    CREATE_ACRONYM_SHORTCUT,
-    async ({ shortcut, ack, client, logger, context }) => {
-      try {
-        await ack()
+  async function handleCreateAcronymShortcuts({
+    ack,
+    shortcut,
+    context,
+    client,
+    logger,
+  }: SlackShortcutArg) {
+    try {
+      await ack()
 
-        const triggerId = shortcut.trigger_id
+      const definition =
+        shortcut.type === 'message_action'
+          ? parseMessageBlocks(shortcut.message.blocks)
+          : undefined
 
-        const { teamId } = context
-        if (!teamId) {
-          throw new Error('no team id found')
-        }
+      const acronym = definition ? getFirstFoundAcronym(definition) : undefined
 
-        const validIntegration =
-          await models.accessTokens.notionAccessTokenStore.isValidNotionInstall(
-            teamId,
-          )
+      const triggerId = shortcut.trigger_id
 
-        if (!validIntegration) {
-          await ErrorModel(
-            client,
-            triggerId,
-            `Your integration to notion has not been setup. Please configure within the app home <${getAppHomeDeepLink(
-              teamId,
-            )}}|here>`,
-          )
-        }
-
-        await createAcronymModal(client, triggerId)
-      } catch (error) {
-        logEventError(logger, CREATE_ACRONYM_SHORTCUT, error as Error)
+      const { teamId } = context
+      if (!teamId) {
+        throw new Error('no team id found')
       }
-    },
-  )
+
+      const validIntegration =
+        await models.accessTokens.notionAccessTokenStore.isValidNotionInstall(
+          teamId,
+        )
+
+      if (!validIntegration) {
+        await ErrorModel(
+          client,
+          triggerId,
+          `Your integration to notion has not been setup. Please configure within the app home <${getAppHomeDeepLink(
+            teamId,
+          )}}|here>`,
+        )
+      }
+
+      await createAcronymModal(client, triggerId, {
+        acronym,
+        definition,
+      })
+    } catch (error) {
+      logEventError(logger, CREATE_ACRONYM_SHORTCUT_GLOBAL, error as Error)
+    }
+  }
+
+  app.shortcut(CREATE_ACRONYM_SHORTCUT_GLOBAL, async (args) => {
+    await handleCreateAcronymShortcuts(args)
+  })
+
+  app.shortcut(CREATE_ACRONYM_SHORTCUT_MESSAGE, async (args) => {
+    await handleCreateAcronymShortcuts(args)
+  })
 
   app.view(
     CREATE_ACRONYM_CALLBACK_ID,

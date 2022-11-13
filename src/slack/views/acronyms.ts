@@ -1,5 +1,10 @@
 import { WebClient } from '@slack/web-api'
 
+export interface AcronymModalInitialValuesArgs {
+  acronym?: string
+  definition?: string
+}
+
 export const CREATE_ACRONYM_CALLBACK_ID = 'create_acronym_callback'
 export const CREATE_ACRONYM_INPUT_LABEL = 'create_acronym_input_label'
 export const CREATE_ACRONYM_INPUT_DESCRIPTION =
@@ -9,7 +14,11 @@ export const CREATE_ACRONYM_INPUT_LABEL_ACTION =
 export const CREATE_ACRONYM_INPUT_DESCRIPTION_ACTION =
   'create_acronym_input_description_action'
 
-export async function createAcronymModal(client: WebClient, triggerId: string) {
+export async function createAcronymModal(
+  client: WebClient,
+  triggerId: string,
+  values?: AcronymModalInitialValuesArgs,
+) {
   return client.views.open({
     trigger_id: triggerId,
     view: {
@@ -45,6 +54,7 @@ export async function createAcronymModal(client: WebClient, triggerId: string) {
           element: {
             type: 'plain_text_input',
             action_id: CREATE_ACRONYM_INPUT_LABEL_ACTION,
+            initial_value: values?.acronym,
           },
           label: {
             type: 'plain_text',
@@ -59,6 +69,7 @@ export async function createAcronymModal(client: WebClient, triggerId: string) {
             type: 'plain_text_input',
             multiline: true,
             action_id: CREATE_ACRONYM_INPUT_DESCRIPTION_ACTION,
+            initial_value: values?.definition,
           },
           label: {
             type: 'plain_text',
