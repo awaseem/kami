@@ -10,7 +10,8 @@
     "sourceMap": true,
     "strict": true,
     "outDir": "build",
-    "rootDir": "."
+    "rootDir": ".",
+    "downlevelIteration": true
   },
   "include": ["src/**/*", "__tests__/**/*"]
 }

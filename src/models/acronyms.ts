@@ -12,30 +12,33 @@ export interface CreateAcronymArgs {
   username: string
 }
 
-async function queryAcronym(
+async function queryAcronyms(
   accessToken: string,
   databaseId: string,
-  acronym: string,
+  acronyms: string[],
 ) {
   const notion = createNotionClient(accessToken)
+
+  const uniqueAcronyms = [...new Set(acronyms)]
+  const orFilter = uniqueAcronyms.flatMap((acronym) => [
+    {
+      property: 'Acronym',
+      title: {
+        contains: acronym,
+      },
+    },
+    {
+      property: 'Acronym',
+      title: {
+        equals: acronym,
+      },
+    },
+  ])
 
   const response = await notion.databases.query({
     database_id: databaseId,
     filter: {
-      or: [
-        {
-          property: 'Acronym',
-          title: {
-            contains: acronym,
-          },
-        },
-        {
-          property: 'Acronym',
-          title: {
-            equals: acronym,
-          },
-        },
-      ],
+      or: orFilter,
     },
     sorts: [
       {
@@ -162,6 +165,6 @@ export function createAcronymModel() {
   return {
     createAcronymDatabase,
     createAcronym,
-    queryAcronym,
+    queryAcronyms,
   }
 }

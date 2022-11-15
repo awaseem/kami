@@ -11,5 +11,5 @@ export function getUserLink(userId: string) {
 }
 
 export function getNotionPageUrl(pageId: string) {
-  return `https://notion.so/${pageId.replace('-', '')}`
+  return `https://notion.so/${pageId.replaceAll('-', '')}`
 }

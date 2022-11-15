@@ -9,6 +9,7 @@ import type { Models } from '../../models'
 import { getAppHomeDeepLink } from '../../utils/links'
 import { logEventError } from '../../utils/logger'
 import {
+  foundAcronymMessage,
   getFirstFoundAcronym,
   getFoundAcronyms,
   parseMessageBlocks,
@@ -110,7 +111,7 @@ export function createShortcutHandlers(app: App, models: Models) {
             shortcut.channel.id,
             shortcut.user.id,
             'Sorry no acronyms were found.',
-            shortcut.message_ts,
+            shortcut.message.thread_ts,
           )
           return
         }
@@ -126,12 +127,29 @@ export function createShortcutHandlers(app: App, models: Models) {
           )
         const databaseId = await models.notion.getAcronymPageIdOrThrow(teamId)
 
-        console.log(
-          await models.acronyms.queryAcronym(
-            accessToken,
-            databaseId,
-            acronyms[0],
-          ),
+        const foundAcronyms = await models.acronyms.queryAcronyms(
+          accessToken,
+          databaseId,
+          acronyms,
+        )
+        if (foundAcronyms.length === 0) {
+          await saySilent(
+            client,
+            shortcut.channel.id,
+            shortcut.user.id,
+            'Sorry no acronyms were found.',
+            shortcut.message.thread_ts,
+          )
+          return
+        }
+
+        const replyMessage = foundAcronymMessage(foundAcronyms)
+        await saySilent(
+          client,
+          shortcut.channel.id,
+          shortcut.user.id,
+          replyMessage,
+          shortcut.message.thread_ts,
         )
       } catch (error) {
         logEventError(logger, DEFINE_ACRONYM_SHORTCUT_MESSAGE, error as Error)
