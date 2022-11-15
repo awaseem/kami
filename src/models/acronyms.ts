@@ -1,19 +1,56 @@
 import { createNotionClient } from '../lib/notion'
 import { getUserLink } from '../utils/links'
 import { logError } from '../utils/logger'
+import { databaseResponseToAcronyms } from '../utils/notion'
 
 export interface CreateAcronymArgs {
   accessToken: string
-  parentPageId: string
+  databaseId: string
   acronym: string
   definition: string
   userId: string
   username: string
 }
 
+async function queryAcronym(
+  accessToken: string,
+  databaseId: string,
+  acronym: string,
+) {
+  const notion = createNotionClient(accessToken)
+
+  const response = await notion.databases.query({
+    database_id: databaseId,
+    filter: {
+      or: [
+        {
+          property: 'Title',
+          title: {
+            contains: acronym,
+          },
+        },
+        {
+          property: 'Title',
+          title: {
+            equals: acronym,
+          },
+        },
+      ],
+    },
+    sorts: [
+      {
+        property: 'Created At',
+        direction: 'descending',
+      },
+    ],
+  })
+
+  return databaseResponseToAcronyms(response)
+}
+
 async function createAcronym({
   accessToken,
-  parentPageId,
+  databaseId,
   acronym,
   definition,
   userId,
@@ -24,7 +61,7 @@ async function createAcronym({
 
     await notion.pages.create({
       parent: {
-        database_id: parentPageId,
+        database_id: databaseId,
       },
       properties: {
         Acronym: {
@@ -125,5 +162,6 @@ export function createAcronymModel() {
   return {
     createAcronymDatabase,
     createAcronym,
+    queryAcronym,
   }
 }

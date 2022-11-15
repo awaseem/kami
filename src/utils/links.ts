@@ -9,3 +9,7 @@ export function getAppHomeDeepLink(teamId: string) {
 export function getUserLink(userId: string) {
   return `https://slack.com/app_redirect?channel=${userId}`
 }
+
+export function getNotionPageUrl(pageId: string) {
+  return `https://notion.so/${pageId}`
+}

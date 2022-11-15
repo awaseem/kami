@@ -116,7 +116,7 @@ export function createShortcutHandlers(app: App, models: Models) {
 
         await models.acronyms.createAcronym({
           accessToken,
-          parentPageId,
+          databaseId: parentPageId,
           acronym,
           definition,
           userId: user.id,
