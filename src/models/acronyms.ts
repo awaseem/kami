@@ -24,13 +24,13 @@ async function queryAcronym(
     filter: {
       or: [
         {
-          property: 'Title',
+          property: 'Acronym',
           title: {
             contains: acronym,
           },
         },
         {
-          property: 'Title',
+          property: 'Acronym',
           title: {
             equals: acronym,
           },
@@ -39,7 +39,7 @@ async function queryAcronym(
     },
     sorts: [
       {
-        property: 'Created At',
+        property: 'Created at',
         direction: 'descending',
       },
     ],

@@ -8,7 +8,12 @@ import { StringIndexed } from '@slack/bolt/dist/types/helpers'
 import type { Models } from '../../models'
 import { getAppHomeDeepLink } from '../../utils/links'
 import { logEventError } from '../../utils/logger'
-import { getFirstFoundAcronym, parseMessageBlocks } from '../../utils/messages'
+import {
+  getFirstFoundAcronym,
+  getFoundAcronyms,
+  parseMessageBlocks,
+} from '../../utils/messages'
+import { saySilent } from '../../utils/slack'
 import {
   createAcronymModal,
   CREATE_ACRONYM_CALLBACK_ID,
@@ -24,6 +29,7 @@ type SlackShortcutArg = SlackShortcutMiddlewareArgs<SlackShortcut> &
 
 const CREATE_ACRONYM_SHORTCUT_GLOBAL = 'define_acronym'
 const CREATE_ACRONYM_SHORTCUT_MESSAGE = 'create_acronym_message_shortcut'
+const DEFINE_ACRONYM_SHORTCUT_MESSAGE = 'define_acronym_message_shortcut'
 
 export function createShortcutHandlers(app: App, models: Models) {
   async function handleCreateAcronymShortcuts({
@@ -81,6 +87,57 @@ export function createShortcutHandlers(app: App, models: Models) {
   app.shortcut(CREATE_ACRONYM_SHORTCUT_MESSAGE, async (args) => {
     await handleCreateAcronymShortcuts(args)
   })
+
+  app.shortcut(
+    DEFINE_ACRONYM_SHORTCUT_MESSAGE,
+    async ({ ack, logger, shortcut, client, context }) => {
+      try {
+        await ack()
+
+        if (shortcut.type !== 'message_action') {
+          return
+        }
+
+        const message = parseMessageBlocks(shortcut.message.blocks)
+        if (!message) {
+          return
+        }
+
+        const acronyms = getFoundAcronyms(message)
+        if (!acronyms) {
+          await saySilent(
+            client,
+            shortcut.channel.id,
+            shortcut.user.id,
+            'Sorry no acronyms were found.',
+            shortcut.message_ts,
+          )
+          return
+        }
+
+        const teamId = context.teamId
+        if (!teamId) {
+          throw new Error('invalid team id.')
+        }
+
+        const accessToken =
+          await models.accessTokens.notionAccessTokenStore.getAccessTokenOrThrow(
+            teamId,
+          )
+        const databaseId = await models.notion.getAcronymPageIdOrThrow(teamId)
+
+        console.log(
+          await models.acronyms.queryAcronym(
+            accessToken,
+            databaseId,
+            acronyms[0],
+          ),
+        )
+      } catch (error) {
+        logEventError(logger, DEFINE_ACRONYM_SHORTCUT_MESSAGE, error as Error)
+      }
+    },
+  )
 
   app.view(
     CREATE_ACRONYM_CALLBACK_ID,

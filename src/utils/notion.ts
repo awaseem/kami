@@ -45,8 +45,8 @@ function pageObjectResponseToAcronym(
       ? combineRichText(acronymProp.title)
       : undefined
   const definition =
-    acronymProp.type === 'rich_text'
-      ? combineRichText(acronymProp.rich_text)
+    definitionProp.type === 'rich_text'
+      ? combineRichText(definitionProp.rich_text)
       : undefined
 
   if (!acronym || !definition) {
@@ -63,6 +63,7 @@ function pageObjectResponseToAcronym(
 
 export function databaseResponseToAcronyms(response: QueryDatabaseResponse) {
   const pages = response.results.filter(isFullPage) as Array<PageObjectResponse>
+
   return pages
     .map(pageObjectResponseToAcronym)
     .filter(Boolean) as Array<Acronym>
