@@ -37,7 +37,7 @@ export function createAppHomeHandlers(app: App, models: Models) {
 
   app.action(
     NOTION_SETUP_PAGE_ID_BUTTON_CLICKED,
-    async ({ ack, action, body, logger, context, client }) => {
+    async ({ ack, body, logger, context, client, action }) => {
       try {
         await ack()
 
