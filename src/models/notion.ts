@@ -53,6 +53,10 @@ async function getNotionPage(accessToken: string, pageId: string) {
   }
 }
 
+async function getRootPage(teamId: string) {
+  return notionRootPageRedisStore.get(teamId)
+}
+
 async function saveRootPage(teamId: string, pageId: string) {
   await notionRootPageRedisStore.set(teamId, pageId)
 }
@@ -66,6 +70,10 @@ async function getAcronymPageIdOrThrow(teamId: string) {
   return pageId
 }
 
+async function getAcronymPageId(teamId: string) {
+  return notionAcronymStore.get(teamId)
+}
+
 async function setAcronymPageId(teamId: string, pageId: string) {
   await notionAcronymStore.set(teamId, pageId)
 }
@@ -75,7 +83,9 @@ export function createNotionModels() {
     oauthExchange,
     getNotionOauthUrl,
     getNotionPage,
+    getRootPage,
     saveRootPage,
+    getAcronymPageId,
     getAcronymPageIdOrThrow,
     setAcronymPageId,
   }

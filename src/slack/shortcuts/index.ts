@@ -5,9 +5,9 @@ import type {
   SlackShortcutMiddlewareArgs,
 } from '@slack/bolt'
 import { StringIndexed } from '@slack/bolt/dist/types/helpers'
+import { Controllers } from '../../controllers'
 import type { Models } from '../../models'
-import { getAppHomeDeepLink } from '../../utils/links'
-import { logEventError } from '../../utils/logger'
+import { logEventError, respondError } from '../../utils/logger'
 import {
   foundAcronymMessage,
   getFirstFoundAcronym,
@@ -23,7 +23,6 @@ import {
   CREATE_ACRONYM_INPUT_LABEL,
   CREATE_ACRONYM_INPUT_LABEL_ACTION,
 } from '../views/acronyms'
-import { ErrorModel } from '../views/error'
 
 type SlackShortcutArg = SlackShortcutMiddlewareArgs<SlackShortcut> &
   AllMiddlewareArgs<StringIndexed>
@@ -32,13 +31,17 @@ const CREATE_ACRONYM_SHORTCUT_GLOBAL = 'define_acronym'
 const CREATE_ACRONYM_SHORTCUT_MESSAGE = 'create_acronym_message_shortcut'
 const DEFINE_ACRONYM_SHORTCUT_MESSAGE = 'define_acronym_message_shortcut'
 
-export function createShortcutHandlers(app: App, models: Models) {
+export function createShortcutHandlers(
+  app: App,
+  models: Models,
+  controller: Controllers,
+) {
   async function handleCreateAcronymShortcuts({
     ack,
     shortcut,
     context,
     client,
-    logger,
+    respond,
   }: SlackShortcutArg) {
     try {
       await ack()
@@ -47,7 +50,6 @@ export function createShortcutHandlers(app: App, models: Models) {
         shortcut.type === 'message_action'
           ? parseMessageBlocks(shortcut.message.blocks)
           : undefined
-
       const acronym = definition ? getFirstFoundAcronym(definition) : undefined
 
       const triggerId = shortcut.trigger_id
@@ -57,27 +59,12 @@ export function createShortcutHandlers(app: App, models: Models) {
         throw new Error('no team id found')
       }
 
-      const validIntegration =
-        await models.accessTokens.notionAccessTokenStore.isValidNotionInstall(
-          teamId,
-        )
-
-      if (!validIntegration) {
-        await ErrorModel(
-          client,
-          triggerId,
-          `Your integration to notion has not been setup. Please configure within the app home <${getAppHomeDeepLink(
-            teamId,
-          )}}|here>`,
-        )
-      }
-
       await createAcronymModal(client, triggerId, {
         acronym,
         definition,
       })
     } catch (error) {
-      logEventError(logger, CREATE_ACRONYM_SHORTCUT_GLOBAL, error as Error)
+      respondError(CREATE_ACRONYM_SHORTCUT_GLOBAL, error as Error, respond)
     }
   }
 
@@ -91,7 +78,7 @@ export function createShortcutHandlers(app: App, models: Models) {
 
   app.shortcut(
     DEFINE_ACRONYM_SHORTCUT_MESSAGE,
-    async ({ ack, logger, shortcut, client, context }) => {
+    async ({ ack, shortcut, client, context }) => {
       try {
         await ack()
 
@@ -152,15 +139,17 @@ export function createShortcutHandlers(app: App, models: Models) {
           shortcut.message.thread_ts,
         )
       } catch (error) {
-        logEventError(logger, DEFINE_ACRONYM_SHORTCUT_MESSAGE, error as Error)
+        logEventError(DEFINE_ACRONYM_SHORTCUT_MESSAGE, error as Error)
       }
     },
   )
 
   app.view(
     CREATE_ACRONYM_CALLBACK_ID,
-    async ({ ack, context, view, logger, body }) => {
+    async ({ ack, context, view, body, respond }) => {
       try {
+        await ack()
+
         const teamId = context.teamId
         const user = body.user
 
@@ -181,24 +170,18 @@ export function createShortcutHandlers(app: App, models: Models) {
           throw new Error('Failed to find acronym or definition')
         }
 
-        await ack()
+        const accessToken = await controller.auth.getAccessToken(teamId)
 
-        const accessToken =
-          await models.accessTokens.notionAccessTokenStore.getAccessTokenOrThrow(
-            teamId,
-          )
-        const parentPageId = await models.notion.getAcronymPageIdOrThrow(teamId)
-
-        await models.acronyms.createAcronym({
-          accessToken,
-          databaseId: parentPageId,
+        await controller.acronym.createAcronym({
           acronym,
           definition,
+          accessToken,
+          teamId,
           userId: user.id,
           username: user.name,
         })
       } catch (error) {
-        logEventError(logger, CREATE_ACRONYM_CALLBACK_ID, error as Error)
+        respondError(CREATE_ACRONYM_CALLBACK_ID, error as Error, respond)
       }
     },
   )

@@ -27,7 +27,7 @@ export function createAppHomeHandlers(app: App, models: Models) {
 
       await createAppHome(client, event.user, notionConnectUrl)
     } catch (error) {
-      logEventError(logger, APP_HOME_OPEN_EVENT, error as Error)
+      logEventError(APP_HOME_OPEN_EVENT, error as Error)
     }
   })
 
@@ -52,11 +52,7 @@ export function createAppHomeHandlers(app: App, models: Models) {
 
         await createSetupPageModel(client, triggerId)
       } catch (error) {
-        logEventError(
-          logger,
-          NOTION_SETUP_PAGE_ID_BUTTON_CLICKED,
-          error as Error,
-        )
+        logEventError(NOTION_SETUP_PAGE_ID_BUTTON_CLICKED, error as Error)
       }
     },
   )
@@ -121,7 +117,7 @@ export function createAppHomeHandlers(app: App, models: Models) {
         await models.notion.setAcronymPageId(teamId, response.id)
       }
     } catch (error) {
-      logEventError(logger, SETUP_PAGE_CALLBACK_ID, error as Error)
+      logEventError(SETUP_PAGE_CALLBACK_ID, error as Error)
     }
   })
 }

@@ -16,6 +16,10 @@ async function getAccessTokenOrThrow(teamId: string): Promise<string> {
   return accessToken
 }
 
+async function getAccessToken(teamId: string) {
+  return notionAccessTokenStore.get(teamId)
+}
+
 async function setAccessToken(teamId: string, accessToken: string) {
   await notionAccessTokenStore.set(teamId, accessToken)
 }
@@ -26,6 +30,7 @@ export function createAccessTokensModel() {
       isValidNotionInstall,
       getAccessTokenOrThrow,
       setAccessToken,
+      getAccessToken,
     },
   })
 }
