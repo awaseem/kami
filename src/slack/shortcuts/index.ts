@@ -6,7 +6,7 @@ import type {
 } from '@slack/bolt'
 import { StringIndexed } from '@slack/bolt/dist/types/helpers'
 import { Controllers } from '../../controllers'
-import { respondError } from '../../utils/logger'
+import { logEventError } from '../../utils/logger'
 import { getFirstFoundAcronym, parseMessageBlocks } from '../../utils/messages'
 import { saySilent } from '../../utils/slack'
 import {
@@ -59,7 +59,7 @@ export function createShortcutHandlers(app: App, controller: Controllers) {
         definition,
       })
     } catch (error) {
-      respondError(CREATE_ACRONYM_SHORTCUT_GLOBAL, error as Error, respond)
+      logEventError(CREATE_ACRONYM_SHORTCUT_GLOBAL, error as Error)
     }
   }
 
@@ -80,7 +80,7 @@ export function createShortcutHandlers(app: App, controller: Controllers) {
         const triggerId = shortcut.trigger_id
         await defineAcronymModal(client, triggerId)
       } catch (error) {
-        respondError(DEFINE_ACRONYM_SHORTCUT_GLOBAL, error as Error, respond)
+        logEventError(DEFINE_ACRONYM_SHORTCUT_GLOBAL, error as Error)
       }
     },
   )
@@ -125,17 +125,15 @@ export function createShortcutHandlers(app: App, controller: Controllers) {
           shortcut.message.thread_ts,
         )
       } catch (error) {
-        respondError(DEFINE_ACRONYM_SHORTCUT_MESSAGE, error as Error, respond)
+        logEventError(DEFINE_ACRONYM_SHORTCUT_MESSAGE, error as Error)
       }
     },
   )
 
   app.view(
     DEFINE_ACRONYM_CALLBACK_ID,
-    async ({ ack, context, view, body, respond }) => {
+    async ({ ack, context, view, body, client }) => {
       try {
-        await ack()
-
         const teamId = context.teamId
         const user = body.user
 
@@ -158,14 +156,28 @@ export function createShortcutHandlers(app: App, controller: Controllers) {
           teamId,
           plainText: search,
         })
-        if (!definition) {
-          respond('Sorry no acronyms were found.')
-          return
-        }
 
-        respond(definition)
+        await ack({
+          response_action: 'update',
+          view: {
+            type: 'modal',
+            title: {
+              type: 'plain_text',
+              text: 'Voila!',
+            },
+            blocks: [
+              {
+                type: 'section',
+                text: {
+                  type: 'mrkdwn',
+                  text: definition ?? `Sorry I couldn't find anything 😞`,
+                },
+              },
+            ],
+          },
+        })
       } catch (error) {
-        respondError(DEFINE_ACRONYM_CALLBACK_ID, error as Error, respond)
+        logEventError(DEFINE_ACRONYM_CALLBACK_ID, error as Error)
       }
     },
   )
@@ -207,7 +219,7 @@ export function createShortcutHandlers(app: App, controller: Controllers) {
           username: user.name,
         })
       } catch (error) {
-        respondError(CREATE_ACRONYM_CALLBACK_ID, error as Error, respond)
+        logEventError(CREATE_ACRONYM_CALLBACK_ID, error as Error)
       }
     },
   )
