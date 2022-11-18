@@ -78,48 +78,26 @@ export function createShortcutHandlers(
 
   app.shortcut(
     DEFINE_ACRONYM_SHORTCUT_MESSAGE,
-    async ({ ack, shortcut, client, context }) => {
+    async ({ ack, shortcut, client, context, respond }) => {
       try {
         await ack()
-
-        if (shortcut.type !== 'message_action') {
-          return
-        }
-
-        const message = parseMessageBlocks(shortcut.message.blocks)
-        if (!message) {
-          return
-        }
-
-        const acronyms = getFoundAcronyms(message)
-        if (!acronyms) {
-          await saySilent(
-            client,
-            shortcut.channel.id,
-            shortcut.user.id,
-            'Sorry no acronyms were found.',
-            shortcut.message.thread_ts,
-          )
-          return
-        }
 
         const teamId = context.teamId
         if (!teamId) {
           throw new Error('invalid team id.')
         }
+        if (shortcut.type !== 'message_action') {
+          return
+        }
 
-        const accessToken =
-          await models.accessTokens.notionAccessTokenStore.getAccessTokenOrThrow(
-            teamId,
-          )
-        const databaseId = await models.notion.getAcronymPageIdOrThrow(teamId)
+        const accessToken = await controller.auth.getAccessToken(teamId)
 
-        const foundAcronyms = await models.acronyms.queryAcronyms(
+        const acronymMessage = await controller.acronym.defineAcronym({
+          messageBlocks: shortcut.message.blocks,
           accessToken,
-          databaseId,
-          acronyms,
-        )
-        if (foundAcronyms.length === 0) {
+          teamId,
+        })
+        if (!acronymMessage) {
           await saySilent(
             client,
             shortcut.channel.id,
@@ -130,16 +108,15 @@ export function createShortcutHandlers(
           return
         }
 
-        const replyMessage = foundAcronymMessage(foundAcronyms)
         await saySilent(
           client,
           shortcut.channel.id,
           shortcut.user.id,
-          replyMessage,
+          acronymMessage,
           shortcut.message.thread_ts,
         )
       } catch (error) {
-        logEventError(DEFINE_ACRONYM_SHORTCUT_MESSAGE, error as Error)
+        respondError(DEFINE_ACRONYM_SHORTCUT_MESSAGE, error as Error, respond)
       }
     },
   )

@@ -1,5 +1,11 @@
 import { Models } from '../models'
 import { ControllerError } from '../utils/error'
+import {
+  Block,
+  foundAcronymMessage,
+  getFoundAcronyms,
+  parseMessageBlocks,
+} from '../utils/messages'
 
 export interface CreateAcronymArgs {
   accessToken: string
@@ -8,6 +14,12 @@ export interface CreateAcronymArgs {
   definition: string
   userId: string
   username: string
+}
+
+export interface DefineAcronymArgs {
+  messageBlocks?: Block[]
+  teamId: string
+  accessToken: string
 }
 
 export function createAcronymControllers(models: Models) {
@@ -34,7 +46,40 @@ export function createAcronymControllers(models: Models) {
     })
   }
 
+  async function defineAcronym({
+    messageBlocks,
+    teamId,
+    accessToken,
+  }: DefineAcronymArgs) {
+    const message = parseMessageBlocks(messageBlocks)
+    if (!message) {
+      throw new ControllerError('Failed to parse blocks for messages')
+    }
+
+    const acronyms = getFoundAcronyms(message)
+    if (!acronyms) {
+      return undefined
+    }
+
+    const databaseId = await models.notion.getAcronymPageId(teamId)
+    if (!databaseId) {
+      throw new ControllerError('failed to find a page to store acronyms')
+    }
+
+    const foundAcronyms = await models.acronyms.queryAcronyms(
+      accessToken,
+      databaseId,
+      acronyms,
+    )
+    if (foundAcronyms.length === 0) {
+      return undefined
+    }
+
+    return foundAcronymMessage(foundAcronyms)
+  }
+
   return Object.freeze({
     createAcronym,
+    defineAcronym,
   })
 }
