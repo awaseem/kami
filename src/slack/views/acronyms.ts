@@ -81,3 +81,56 @@ export async function createAcronymModal(
     },
   })
 }
+
+export const DEFINE_ACRONYM_CALLBACK_ID = 'define_acronym_callback'
+export const DEFINE_ACRONYM_INPUT_LABEL = 'define_acronym_input_label'
+export const DEFINE_ACRONYM_INPUT_LABEL_ACTION =
+  'define_acronym_input_label_action'
+
+export async function defineAcronymModal(client: WebClient, triggerId: string) {
+  return client.views.open({
+    trigger_id: triggerId,
+    view: {
+      type: 'modal',
+      callback_id: DEFINE_ACRONYM_CALLBACK_ID,
+      title: {
+        type: 'plain_text',
+        text: 'Define acronym',
+        emoji: true,
+      },
+      submit: {
+        type: 'plain_text',
+        text: 'Submit',
+        emoji: true,
+      },
+      close: {
+        type: 'plain_text',
+        text: 'Cancel',
+        emoji: true,
+      },
+      blocks: [
+        {
+          type: 'section',
+          text: {
+            type: 'plain_text',
+            text: 'Look up an acronym in your notion database.',
+            emoji: true,
+          },
+        },
+        {
+          type: 'input',
+          block_id: DEFINE_ACRONYM_INPUT_LABEL,
+          element: {
+            type: 'plain_text_input',
+            action_id: DEFINE_ACRONYM_INPUT_LABEL_ACTION,
+          },
+          label: {
+            type: 'plain_text',
+            text: 'Search acronym',
+            emoji: true,
+          },
+        },
+      ],
+    },
+  })
+}

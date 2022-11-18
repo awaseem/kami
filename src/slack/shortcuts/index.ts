@@ -6,14 +6,8 @@ import type {
 } from '@slack/bolt'
 import { StringIndexed } from '@slack/bolt/dist/types/helpers'
 import { Controllers } from '../../controllers'
-import type { Models } from '../../models'
-import { logEventError, respondError } from '../../utils/logger'
-import {
-  foundAcronymMessage,
-  getFirstFoundAcronym,
-  getFoundAcronyms,
-  parseMessageBlocks,
-} from '../../utils/messages'
+import { respondError } from '../../utils/logger'
+import { getFirstFoundAcronym, parseMessageBlocks } from '../../utils/messages'
 import { saySilent } from '../../utils/slack'
 import {
   createAcronymModal,
@@ -22,20 +16,21 @@ import {
   CREATE_ACRONYM_INPUT_DESCRIPTION_ACTION,
   CREATE_ACRONYM_INPUT_LABEL,
   CREATE_ACRONYM_INPUT_LABEL_ACTION,
+  defineAcronymModal,
+  DEFINE_ACRONYM_CALLBACK_ID,
+  DEFINE_ACRONYM_INPUT_LABEL,
+  DEFINE_ACRONYM_INPUT_LABEL_ACTION,
 } from '../views/acronyms'
 
 type SlackShortcutArg = SlackShortcutMiddlewareArgs<SlackShortcut> &
   AllMiddlewareArgs<StringIndexed>
 
 const CREATE_ACRONYM_SHORTCUT_GLOBAL = 'define_acronym'
+const DEFINE_ACRONYM_SHORTCUT_GLOBAL = 'define_acronym_global'
 const CREATE_ACRONYM_SHORTCUT_MESSAGE = 'create_acronym_message_shortcut'
 const DEFINE_ACRONYM_SHORTCUT_MESSAGE = 'define_acronym_message_shortcut'
 
-export function createShortcutHandlers(
-  app: App,
-  models: Models,
-  controller: Controllers,
-) {
+export function createShortcutHandlers(app: App, controller: Controllers) {
   async function handleCreateAcronymShortcuts({
     ack,
     shortcut,
@@ -75,6 +70,20 @@ export function createShortcutHandlers(
   app.shortcut(CREATE_ACRONYM_SHORTCUT_MESSAGE, async (args) => {
     await handleCreateAcronymShortcuts(args)
   })
+
+  app.shortcut(
+    DEFINE_ACRONYM_SHORTCUT_GLOBAL,
+    async ({ ack, shortcut, client, respond }) => {
+      try {
+        await ack()
+
+        const triggerId = shortcut.trigger_id
+        await defineAcronymModal(client, triggerId)
+      } catch (error) {
+        respondError(DEFINE_ACRONYM_SHORTCUT_GLOBAL, error as Error, respond)
+      }
+    },
+  )
 
   app.shortcut(
     DEFINE_ACRONYM_SHORTCUT_MESSAGE,
@@ -117,6 +126,46 @@ export function createShortcutHandlers(
         )
       } catch (error) {
         respondError(DEFINE_ACRONYM_SHORTCUT_MESSAGE, error as Error, respond)
+      }
+    },
+  )
+
+  app.view(
+    DEFINE_ACRONYM_CALLBACK_ID,
+    async ({ ack, context, view, body, respond }) => {
+      try {
+        await ack()
+
+        const teamId = context.teamId
+        const user = body.user
+
+        if (!teamId) {
+          throw new Error('invalid team id.')
+        }
+
+        const search =
+          view.state.values[DEFINE_ACRONYM_INPUT_LABEL]?.[
+            DEFINE_ACRONYM_INPUT_LABEL_ACTION
+          ]?.value
+        if (!search) {
+          throw new Error('invalid search.')
+        }
+
+        const accessToken = await controller.auth.getAccessToken(teamId)
+
+        const definition = await controller.acronym.defineAcronym({
+          accessToken,
+          teamId,
+          plainText: search,
+        })
+        if (!definition) {
+          respond('Sorry no acronyms were found.')
+          return
+        }
+
+        respond(definition)
+      } catch (error) {
+        respondError(DEFINE_ACRONYM_CALLBACK_ID, error as Error, respond)
       }
     },
   )

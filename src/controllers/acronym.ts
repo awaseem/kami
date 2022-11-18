@@ -18,6 +18,7 @@ export interface CreateAcronymArgs {
 
 export interface DefineAcronymArgs {
   messageBlocks?: Block[]
+  plainText?: string
   teamId: string
   accessToken: string
 }
@@ -47,11 +48,12 @@ export function createAcronymControllers(models: Models) {
   }
 
   async function defineAcronym({
+    plainText,
     messageBlocks,
     teamId,
     accessToken,
   }: DefineAcronymArgs) {
-    const message = parseMessageBlocks(messageBlocks)
+    const message = plainText ?? parseMessageBlocks(messageBlocks)
     if (!message) {
       throw new ControllerError('Failed to parse blocks for messages')
     }
