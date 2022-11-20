@@ -23,7 +23,7 @@ export function createAuthController(models: Models) {
     const token =
       await models.accessTokens.notionAccessTokenStore.getAccessToken(teamId)
     if (!token) {
-      throw new ControllerError('unable to find access token for validation')
+      throw new ControllerError('Unable to find access token for validation')
     }
 
     return token
