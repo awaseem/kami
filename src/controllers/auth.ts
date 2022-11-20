@@ -14,11 +14,6 @@ export function createAuthController(models: Models) {
     return Boolean(accessToken)
   }
 
-  async function hasRootPage(teamId: string) {
-    const rootPage = await models.notion.getRootPage(teamId)
-    return Boolean(rootPage)
-  }
-
   async function getAccessToken(teamId: string) {
     const token =
       await models.accessTokens.notionAccessTokenStore.getAccessToken(teamId)
@@ -29,5 +24,5 @@ export function createAuthController(models: Models) {
     return token
   }
 
-  return Object.freeze({ isValid, hasRootPage, getAccessToken })
+  return Object.freeze({ isValid, getAccessToken })
 }

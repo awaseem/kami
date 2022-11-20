@@ -5,6 +5,7 @@ import {
   getNotionBasicAuth,
   getNotionRedirectUrl,
 } from '../utils/env'
+import { NotionError } from '../utils/error'
 import { logError } from '../utils/logger'
 import { createRedisStore } from './store'
 
@@ -78,6 +79,89 @@ async function setAcronymPageId(teamId: string, pageId: string) {
   await notionAcronymStore.set(teamId, pageId)
 }
 
+async function createRootPage(accessToken: string, parentId: string) {
+  try {
+    const notion = createNotionClient(accessToken)
+
+    const response = await notion.pages.create({
+      parent: {
+        type: 'page_id',
+        page_id: parentId,
+      },
+      icon: { type: 'emoji', emoji: '🔮' },
+      properties: {
+        title: {
+          title: [
+            {
+              text: {
+                content: 'Kami',
+              },
+            },
+          ],
+        },
+      },
+      children: [
+        {
+          object: 'block',
+          paragraph: {
+            rich_text: [
+              {
+                text: {
+                  content:
+                    'Welcome to Kami 👋. We aim to make it our mission to keep information away from Slack.',
+                },
+              },
+            ],
+            color: 'default',
+          },
+        },
+        {
+          object: 'block',
+          heading_1: {
+            rich_text: [
+              {
+                text: {
+                  content: 'What is this?',
+                },
+              },
+            ],
+          },
+        },
+        {
+          object: 'block',
+          paragraph: {
+            rich_text: [
+              {
+                text: {
+                  content:
+                    'This is where Kami stores all information with the integration with Slack. Please do not delete this page, if you wish to move it to another parent, please ensure that page has access to Kami.',
+                },
+              },
+            ],
+            color: 'default',
+          },
+        },
+        {
+          object: 'block',
+          heading_1: {
+            rich_text: [
+              {
+                text: {
+                  content: 'Saved Content',
+                },
+              },
+            ],
+          },
+        },
+      ],
+    })
+
+    return response
+  } catch (error) {
+    throw new NotionError(error as Error)
+  }
+}
+
 export function createNotionModels() {
   return {
     oauthExchange,
@@ -88,5 +172,6 @@ export function createNotionModels() {
     getAcronymPageId,
     getAcronymPageIdOrThrow,
     setAcronymPageId,
+    createRootPage,
   }
 }

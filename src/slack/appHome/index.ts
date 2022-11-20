@@ -1,5 +1,7 @@
 import type { App } from '@slack/bolt'
+import { Controllers } from '../../controllers'
 import { Models } from '../../models'
+import { handleSlackError } from '../../utils/error'
 import { logEventError } from '../../utils/logger'
 import { getPageIdFromNotionUrl } from '../../utils/notion'
 import { validNotionIntegration } from '../common'
@@ -15,7 +17,11 @@ import {
 
 const APP_HOME_OPEN_EVENT = 'app_home_opened'
 
-export function createAppHomeHandlers(app: App, models: Models) {
+export function createAppHomeHandlers(
+  app: App,
+  models: Models,
+  controllers: Controllers,
+) {
   app.event(APP_HOME_OPEN_EVENT, async ({ context, client, event }) => {
     try {
       const teamId = context.teamId
@@ -37,7 +43,7 @@ export function createAppHomeHandlers(app: App, models: Models) {
 
   app.action(
     NOTION_SETUP_PAGE_ID_BUTTON_CLICKED,
-    async ({ ack, body, logger, context, client, action }) => {
+    async ({ ack, body, context, client }) => {
       try {
         await ack()
 
@@ -57,67 +63,59 @@ export function createAppHomeHandlers(app: App, models: Models) {
     },
   )
 
-  app.view(SETUP_PAGE_CALLBACK_ID, async ({ ack, context, view, logger }) => {
-    try {
-      const teamId = context.teamId
-      if (!teamId) {
-        throw new Error('invalid team id.')
+  app.view(
+    SETUP_PAGE_CALLBACK_ID,
+    async ({ ack, context, view, body, client }) => {
+      try {
+        const teamId = context.teamId
+        if (!teamId) {
+          throw new Error('invalid team id.')
+        }
+
+        const url =
+          view.state.values[SETUP_PAGE_URL_INPUT]?.[SETUP_PAGE_URL_INPUT_ACTION]
+            ?.value
+
+        if (!url) {
+          await ack({
+            response_action: 'errors',
+            errors: {
+              [SETUP_PAGE_URL_INPUT]: 'Please enter a url',
+            },
+          })
+          return
+        }
+
+        const pageId = getPageIdFromNotionUrl(url)
+        if (!pageId) {
+          await ack({
+            response_action: 'errors',
+            errors: {
+              [SETUP_PAGE_URL_INPUT]:
+                'No page id found, please make sure you have a valid notion page url',
+            },
+          })
+          return
+        }
+
+        const accessToken = await controllers.auth.getAccessToken(teamId)
+        const page = await controllers.page.doesPageExist(accessToken, pageId)
+        if (!page) {
+          await ack({
+            response_action: 'errors',
+            errors: {
+              [SETUP_PAGE_URL_INPUT]:
+                'No page found, please ensure that Kami has access to this page and it is in your workspace',
+            },
+          })
+          return
+        }
+
+        await ack()
+        await controllers.page.createRootAndPages(accessToken, teamId, page.id)
+      } catch (error) {
+        handleSlackError(error as Error, body.user.id, client)
       }
-
-      const url =
-        view.state.values[SETUP_PAGE_URL_INPUT]?.[SETUP_PAGE_URL_INPUT_ACTION]
-          ?.value
-
-      if (!url) {
-        await ack({
-          response_action: 'errors',
-          errors: {
-            [SETUP_PAGE_URL_INPUT]: 'Please enter a url',
-          },
-        })
-        return
-      }
-
-      const pageId = getPageIdFromNotionUrl(url)
-      if (!pageId) {
-        await ack({
-          response_action: 'errors',
-          errors: {
-            [SETUP_PAGE_URL_INPUT]:
-              'No page id found, please make sure you have a valid notion page url',
-          },
-        })
-        return
-      }
-
-      const accessToken =
-        await models.accessTokens.notionAccessTokenStore.getAccessTokenOrThrow(
-          teamId,
-        )
-      const page = await models.notion.getNotionPage(accessToken, pageId)
-      if (!page) {
-        await ack({
-          response_action: 'errors',
-          errors: {
-            [SETUP_PAGE_URL_INPUT]:
-              'No page found, please ensure that Kami has access to this page and it is in your workspace',
-          },
-        })
-        return
-      }
-
-      await ack()
-
-      await models.notion.saveRootPage(teamId, page.id)
-      const response = await models.acronyms.createAcronymDatabase(
-        accessToken,
-        page.id,
-      )
-      if (response) {
-        await models.notion.setAcronymPageId(teamId, response.id)
-      }
-    } catch (error) {
-      logEventError(SETUP_PAGE_CALLBACK_ID, error as Error)
-    }
-  })
+    },
+  )
 }

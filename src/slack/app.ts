@@ -18,7 +18,7 @@ export function createSlackApp() {
   })
 
   // Register handlers
-  createAppHomeHandlers(app, models)
+  createAppHomeHandlers(app, models, controllers)
   createShortcutHandlers(app, controllers)
 
   return app
