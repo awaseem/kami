@@ -63,7 +63,6 @@ function pageObjectResponseToAcronym(
 
 export function databaseResponseToAcronyms(response: QueryDatabaseResponse) {
   const pages = response.results.filter(isFullPage) as Array<PageObjectResponse>
-
   return pages
     .map(pageObjectResponseToAcronym)
     .filter(Boolean) as Array<Acronym>

@@ -1,6 +1,6 @@
 import { createNotionClient } from '../lib/notion'
+import { NotionError } from '../utils/error'
 import { getUserLink } from '../utils/links'
-import { logError } from '../utils/logger'
 import { databaseResponseToAcronyms } from '../utils/notion'
 
 export interface CreateAcronymArgs {
@@ -17,38 +17,42 @@ async function queryAcronyms(
   databaseId: string,
   acronyms: string[],
 ) {
-  const notion = createNotionClient(accessToken)
+  try {
+    const notion = createNotionClient(accessToken)
 
-  const uniqueAcronyms = [...new Set(acronyms)]
-  const orFilter = uniqueAcronyms.flatMap((acronym) => [
-    {
-      property: 'Acronym',
-      title: {
-        contains: acronym,
-      },
-    },
-    {
-      property: 'Acronym',
-      title: {
-        equals: acronym,
-      },
-    },
-  ])
-
-  const response = await notion.databases.query({
-    database_id: databaseId,
-    filter: {
-      or: orFilter,
-    },
-    sorts: [
+    const uniqueAcronyms = [...new Set(acronyms)]
+    const orFilter = uniqueAcronyms.flatMap((acronym) => [
       {
-        property: 'Created at',
-        direction: 'descending',
+        property: 'Acronym',
+        title: {
+          contains: acronym,
+        },
       },
-    ],
-  })
+      {
+        property: 'Acronym',
+        title: {
+          equals: acronym,
+        },
+      },
+    ])
 
-  return databaseResponseToAcronyms(response)
+    const response = await notion.databases.query({
+      database_id: databaseId,
+      filter: {
+        or: orFilter,
+      },
+      sorts: [
+        {
+          property: 'Created at',
+          direction: 'descending',
+        },
+      ],
+    })
+
+    return databaseResponseToAcronyms(response)
+  } catch (error) {
+    throw new NotionError(error as Error)
+  }
 }
 
 async function createAcronym({
@@ -100,7 +104,7 @@ async function createAcronym({
       },
     })
   } catch (error) {
-    logError(error as Error)
+    throw new NotionError(error as Error)
   }
 }
 
@@ -157,7 +161,7 @@ async function createAcronymDatabase(accessToken: string, parentId: string) {
 
     return response
   } catch (error) {
-    logError(error as Error)
+    throw new NotionError(error as Error)
   }
 }
 

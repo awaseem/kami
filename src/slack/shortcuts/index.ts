@@ -6,6 +6,7 @@ import type {
 } from '@slack/bolt'
 import { StringIndexed } from '@slack/bolt/dist/types/helpers'
 import { Controllers } from '../../controllers'
+import { handleSlackError } from '../../utils/error'
 import { logEventError } from '../../utils/logger'
 import { getFirstFoundAcronym, parseMessageBlocks } from '../../utils/messages'
 import { saySilent } from '../../utils/slack'
@@ -58,7 +59,7 @@ export function createShortcutHandlers(app: App, controller: Controllers) {
         definition,
       })
     } catch (error) {
-      logEventError(CREATE_ACRONYM_SHORTCUT_GLOBAL, error as Error)
+      handleSlackError(error as Error, shortcut.user.id, client)
     }
   }
 
@@ -86,7 +87,7 @@ export function createShortcutHandlers(app: App, controller: Controllers) {
 
   app.shortcut(
     DEFINE_ACRONYM_SHORTCUT_MESSAGE,
-    async ({ ack, shortcut, client, context }) => {
+    async ({ ack, shortcut, client, context, say }) => {
       try {
         await ack()
 
@@ -124,95 +125,101 @@ export function createShortcutHandlers(app: App, controller: Controllers) {
           shortcut.message.thread_ts,
         )
       } catch (error) {
-        logEventError(DEFINE_ACRONYM_SHORTCUT_MESSAGE, error as Error)
+        handleSlackError(error as Error, shortcut.user.id, client)
       }
     },
   )
 
-  app.view(DEFINE_ACRONYM_CALLBACK_ID, async ({ ack, context, view }) => {
-    try {
-      const teamId = context.teamId
+  app.view(
+    DEFINE_ACRONYM_CALLBACK_ID,
+    async ({ ack, context, view, body, client }) => {
+      try {
+        const teamId = context.teamId
 
-      if (!teamId) {
-        throw new Error('invalid team id.')
-      }
+        if (!teamId) {
+          throw new Error('invalid team id.')
+        }
 
-      const search =
-        view.state.values[DEFINE_ACRONYM_INPUT_LABEL]?.[
-          DEFINE_ACRONYM_INPUT_LABEL_ACTION
-        ]?.value
-      if (!search) {
-        throw new Error('invalid search.')
-      }
+        const search =
+          view.state.values[DEFINE_ACRONYM_INPUT_LABEL]?.[
+            DEFINE_ACRONYM_INPUT_LABEL_ACTION
+          ]?.value
+        if (!search) {
+          throw new Error('invalid search.')
+        }
 
-      const accessToken = await controller.auth.getAccessToken(teamId)
+        const accessToken = await controller.auth.getAccessToken(teamId)
 
-      const definition = await controller.acronym.defineAcronym({
-        accessToken,
-        teamId,
-        plainText: search,
-      })
+        const definition = await controller.acronym.defineAcronym({
+          accessToken,
+          teamId,
+          plainText: search,
+        })
 
-      await ack({
-        response_action: 'update',
-        view: {
-          type: 'modal',
-          title: {
-            type: 'plain_text',
-            text: 'Voila!',
-          },
-          blocks: [
-            {
-              type: 'section',
-              text: {
-                type: 'mrkdwn',
-                text: definition ?? `Sorry I couldn't find anything 😞`,
-              },
+        await ack({
+          response_action: 'update',
+          view: {
+            type: 'modal',
+            title: {
+              type: 'plain_text',
+              text: 'Voila!',
             },
-          ],
-        },
-      })
-    } catch (error) {
-      logEventError(DEFINE_ACRONYM_CALLBACK_ID, error as Error)
-    }
-  })
-
-  app.view(CREATE_ACRONYM_CALLBACK_ID, async ({ ack, context, view, body }) => {
-    try {
-      await ack()
-
-      const teamId = context.teamId
-      const user = body.user
-
-      if (!teamId) {
-        throw new Error('invalid team id.')
+            blocks: [
+              {
+                type: 'section',
+                text: {
+                  type: 'mrkdwn',
+                  text: definition ?? `Sorry I couldn't find anything 😞`,
+                },
+              },
+            ],
+          },
+        })
+      } catch (error) {
+        handleSlackError(error as Error, body.user.id, client)
       }
+    },
+  )
 
-      const acronym =
-        view.state.values[CREATE_ACRONYM_INPUT_LABEL]?.[
-          CREATE_ACRONYM_INPUT_LABEL_ACTION
-        ]?.value
-      const definition =
-        view.state.values[CREATE_ACRONYM_INPUT_DESCRIPTION]?.[
-          CREATE_ACRONYM_INPUT_DESCRIPTION_ACTION
-        ]?.value
+  app.view(
+    CREATE_ACRONYM_CALLBACK_ID,
+    async ({ ack, context, view, body, client }) => {
+      try {
+        await ack()
 
-      if (!acronym || !definition) {
-        throw new Error('Failed to find acronym or definition')
+        const teamId = context.teamId
+        const user = body.user
+
+        if (!teamId) {
+          throw new Error('invalid team id.')
+        }
+
+        const acronym =
+          view.state.values[CREATE_ACRONYM_INPUT_LABEL]?.[
+            CREATE_ACRONYM_INPUT_LABEL_ACTION
+          ]?.value
+        const definition =
+          view.state.values[CREATE_ACRONYM_INPUT_DESCRIPTION]?.[
+            CREATE_ACRONYM_INPUT_DESCRIPTION_ACTION
+          ]?.value
+
+        if (!acronym || !definition) {
+          throw new Error('Failed to find acronym or definition')
+        }
+
+        const accessToken = await controller.auth.getAccessToken(teamId)
+
+        await controller.acronym.createAcronym({
+          acronym,
+          definition,
+          accessToken,
+          teamId,
+          userId: user.id,
+          username: user.name,
+        })
+      } catch (error) {
+        handleSlackError(error as Error, body.user.id, client)
       }
-
-      const accessToken = await controller.auth.getAccessToken(teamId)
-
-      await controller.acronym.createAcronym({
-        acronym,
-        definition,
-        accessToken,
-        teamId,
-        userId: user.id,
-        username: user.name,
-      })
-    } catch (error) {
-      logEventError(CREATE_ACRONYM_CALLBACK_ID, error as Error)
-    }
-  })
+    },
+  )
 }
