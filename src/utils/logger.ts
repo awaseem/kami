@@ -3,5 +3,7 @@ export function logEventError(event: string, error: Error) {
 }
 
 export function logError(error: Error) {
-  console.log(`[INTERNAL]: ERROR occurred internally ${error.message}`)
+  console.log(
+    `[INTERNAL]: ERROR occurred internally ${error.message}. Error name: ${error.name}. Error object: ${error}`,
+  )
 }

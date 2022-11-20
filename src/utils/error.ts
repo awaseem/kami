@@ -46,6 +46,14 @@ export async function handleSlackError(
       return
     }
 
+    if (error.message.includes('not_in_channel')) {
+      await client.chat.postMessage({
+        channel: userId,
+        mrkdwn: true,
+        text: `🤔 Whoops! You need to add Kami to the channel.`,
+      })
+    }
+
     logError(error as Error)
   } catch (error) {
     logError(error as Error)
