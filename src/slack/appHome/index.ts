@@ -16,7 +16,7 @@ import {
 const APP_HOME_OPEN_EVENT = 'app_home_opened'
 
 export function createAppHomeHandlers(app: App, models: Models) {
-  app.event(APP_HOME_OPEN_EVENT, async ({ context, client, event, logger }) => {
+  app.event(APP_HOME_OPEN_EVENT, async ({ context, client, event }) => {
     try {
       const teamId = context.teamId
       if (!teamId) {
