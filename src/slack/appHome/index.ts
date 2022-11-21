@@ -98,8 +98,7 @@ export function createAppHomeHandlers(
           return
         }
 
-        const accessToken = await controllers.auth.getAccessToken(teamId)
-        const page = await controllers.page.doesPageExist(accessToken, pageId)
+        const page = await controllers.page.doesPageExist(teamId, pageId)
         if (!page) {
           await ack({
             response_action: 'errors',
@@ -112,7 +111,7 @@ export function createAppHomeHandlers(
         }
 
         await ack()
-        await controllers.page.createRootAndPages(accessToken, teamId, page.id)
+        await controllers.page.createRootAndPages(teamId, page.id)
       } catch (error) {
         handleSlackError(error as Error, body.user.id, client)
       }

@@ -99,11 +99,8 @@ export function createAcronymHandlers(app: App, controller: Controllers) {
           return
         }
 
-        const accessToken = await controller.auth.getAccessToken(teamId)
-
         const acronymMessage = await controller.acronym.defineAcronym({
           messageBlocks: shortcut.message.blocks,
-          accessToken,
           teamId,
         })
         if (!acronymMessage) {
@@ -148,10 +145,7 @@ export function createAcronymHandlers(app: App, controller: Controllers) {
           throw new Error('invalid search.')
         }
 
-        const accessToken = await controller.auth.getAccessToken(teamId)
-
         const definition = await controller.acronym.defineAcronym({
-          accessToken,
           teamId,
           plainText: search,
         })
@@ -207,12 +201,9 @@ export function createAcronymHandlers(app: App, controller: Controllers) {
           throw new Error('Failed to find acronym or definition')
         }
 
-        const accessToken = await controller.auth.getAccessToken(teamId)
-
         await controller.acronym.createAcronym({
           acronym,
           definition,
-          accessToken,
           teamId,
           userId: user.id,
           username: user.name,

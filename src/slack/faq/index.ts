@@ -62,10 +62,7 @@ export function createFaqHandlers(app: App, controllers: Controllers) {
           throw new Error('Failed to find question')
         }
 
-        const accessToken = await controllers.auth.getAccessToken(teamId)
-
         const page = await controllers.faq.createFaq({
-          accessToken,
           teamId,
           channelName,
           userId,

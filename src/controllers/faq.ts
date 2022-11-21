@@ -3,7 +3,6 @@ import { Models } from '../models'
 import { ControllerError } from '../utils/error'
 
 export interface CreateFaqArgs {
-  accessToken: string
   teamId: string
   question: string
   channelName: string
@@ -15,7 +14,6 @@ export interface CreateFaqArgs {
 
 export function createFaqControllers(models: Models) {
   async function createFaq({
-    accessToken,
     teamId,
     question,
     channelName,
@@ -24,6 +22,12 @@ export function createFaqControllers(models: Models) {
     username,
     answer,
   }: CreateFaqArgs) {
+    const accessToken =
+      await models.accessTokens.notionAccessTokenStore.getAccessToken(teamId)
+    if (!accessToken) {
+      throw new ControllerError('no access token has been found')
+    }
+
     const databaseId = await models.notion.getFaqPageId(teamId)
     if (!databaseId) {
       throw new ControllerError(

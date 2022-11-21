@@ -2,7 +2,13 @@ import { Models } from '../models'
 import { ControllerError } from '../utils/error'
 
 export function createPageControllers(models: Models) {
-  async function doesPageExist(accessToken: string, pageId: string) {
+  async function doesPageExist(teamId: string, pageId: string) {
+    const accessToken =
+      await models.accessTokens.notionAccessTokenStore.getAccessToken(teamId)
+    if (!accessToken) {
+      throw new ControllerError('no access token has been found')
+    }
+
     const page = await models.notion.getNotionPage(accessToken, pageId)
     if (!page) {
       throw new ControllerError('Failed to get page')
@@ -11,11 +17,12 @@ export function createPageControllers(models: Models) {
     return page
   }
 
-  async function createRootAndPages(
-    accessToken: string,
-    teamId: string,
-    parentPageId: string,
-  ) {
+  async function createRootAndPages(teamId: string, parentPageId: string) {
+    const accessToken =
+      await models.accessTokens.notionAccessTokenStore.getAccessToken(teamId)
+    if (!accessToken) {
+      throw new ControllerError('no access token has been found')
+    }
     // Create root page
     const rootPage = await models.notion.createRootPage(
       accessToken,
