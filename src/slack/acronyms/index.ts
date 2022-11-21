@@ -31,7 +31,7 @@ const DEFINE_ACRONYM_SHORTCUT_GLOBAL = 'define_acronym_global'
 const CREATE_ACRONYM_SHORTCUT_MESSAGE = 'create_acronym_message_shortcut'
 const DEFINE_ACRONYM_SHORTCUT_MESSAGE = 'define_acronym_message_shortcut'
 
-export function createShortcutHandlers(app: App, controller: Controllers) {
+export function createAcronymHandlers(app: App, controller: Controllers) {
   async function handleCreateAcronymShortcuts({
     ack,
     shortcut,

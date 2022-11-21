@@ -4,7 +4,8 @@ import { createModels } from '../models'
 import { createRouter } from '../routes'
 import { getSlackSigningSecret, getSlackToken } from '../utils/env'
 import { createAppHomeHandlers } from './appHome'
-import { createShortcutHandlers } from './shortcuts'
+import { createAcronymHandlers } from './acronyms'
+import { createFaqHandlers } from './faq'
 
 export function createSlackApp() {
   const models = createModels()
@@ -19,7 +20,8 @@ export function createSlackApp() {
 
   // Register handlers
   createAppHomeHandlers(app, models, controllers)
-  createShortcutHandlers(app, controllers)
+  createAcronymHandlers(app, controllers)
+  createFaqHandlers(app, controllers)
 
   return app
 }
