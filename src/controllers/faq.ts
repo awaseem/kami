@@ -31,7 +31,7 @@ export function createFaqControllers(models: Models) {
       )
     }
 
-    await models.faq.createFaq({
+    const response = await models.faq.createFaq({
       databaseId,
       accessToken,
       userId,
@@ -41,6 +41,14 @@ export function createFaqControllers(models: Models) {
       answer,
       channelName: `#${channelName}`,
     })
+
+    if (!isFullPage(response)) {
+      throw new ControllerError(
+        'The page may have been created, but we received a non full page from Notion',
+      )
+    }
+
+    return response
   }
 
   return Object.freeze({

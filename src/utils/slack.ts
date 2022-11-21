@@ -14,3 +14,18 @@ export async function saySilent(
     thread_ts: threadTs,
   })
 }
+
+export async function sayToThread(
+  client: WebClient,
+  channelId: string,
+  userId: string,
+  text: string,
+  threadTs?: string,
+) {
+  return client.chat.postMessage({
+    channel: channelId,
+    user: userId,
+    text,
+    thread_ts: threadTs,
+  })
+}

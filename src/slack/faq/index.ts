@@ -1,6 +1,7 @@
 import { App } from '@slack/bolt'
 import { Controllers } from '../../controllers'
 import { handleSlackError, UserViewError } from '../../utils/error'
+import { sayToThread } from '../../utils/slack'
 
 const CREATE_FAQ_SHORTCUT_MESSAGE = 'create_faq_message_shortcut'
 
@@ -63,7 +64,7 @@ export function createFaqHandlers(app: App, controllers: Controllers) {
 
         const accessToken = await controllers.auth.getAccessToken(teamId)
 
-        await controllers.faq.createFaq({
+        const page = await controllers.faq.createFaq({
           accessToken,
           teamId,
           channelName,
@@ -73,6 +74,14 @@ export function createFaqHandlers(app: App, controllers: Controllers) {
           threadUrl: permalink,
           answer,
         })
+
+        await sayToThread(
+          client,
+          channelId,
+          userId,
+          `Hi 👋, We created the following <${page.url}|notion page> for this FAQ.`,
+          threadTs,
+        )
       } catch (error) {
         handleSlackError(error as Error, userId, client)
       }
