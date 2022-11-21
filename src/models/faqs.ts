@@ -26,7 +26,7 @@ async function createFaq({
   try {
     const notion = createNotionClient(accessToken)
 
-    await notion.pages.create({
+    return await notion.pages.create({
       parent: {
         database_id: databaseId,
       },
