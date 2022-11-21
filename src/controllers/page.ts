@@ -32,6 +32,12 @@ export function createPageControllers(models: Models) {
     if (acronymPage) {
       await models.notion.setAcronymPageId(teamId, acronymPage.id)
     }
+
+    // Create FAQ database
+    const faqPage = await models.faq.createFaqDatabase(accessToken, rootId)
+    if (faqPage) {
+      await models.notion.setFaqPageId(teamId, faqPage.id)
+    }
   }
 
   return Object.freeze({

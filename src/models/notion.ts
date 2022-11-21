@@ -13,6 +13,7 @@ const NOTION_AUTH_EXCHANGE_ROUTE = 'https://api.notion.com/v1/oauth/token'
 
 const notionRootPageRedisStore = createRedisStore('notion|root|page')
 const notionAcronymStore = createRedisStore('notion|acronym|page')
+const notionFaqStore = createRedisStore('notion|faq|page')
 
 async function oauthExchange(code: string) {
   const body = {
@@ -62,21 +63,20 @@ async function saveRootPage(teamId: string, pageId: string) {
   await notionRootPageRedisStore.set(teamId, pageId)
 }
 
-async function getAcronymPageIdOrThrow(teamId: string) {
-  const pageId = await notionAcronymStore.get(teamId)
-  if (!pageId) {
-    throw new Error('no page id found')
-  }
-
-  return pageId
-}
-
 async function getAcronymPageId(teamId: string) {
   return notionAcronymStore.get(teamId)
 }
 
 async function setAcronymPageId(teamId: string, pageId: string) {
   await notionAcronymStore.set(teamId, pageId)
+}
+
+async function getFaqPageId(teamId: string) {
+  return notionFaqStore.get(teamId)
+}
+
+async function setFaqPageId(teamId: string, pageId: string) {
+  await notionFaqStore.set(teamId, pageId)
 }
 
 async function createRootPage(accessToken: string, parentId: string) {
@@ -170,8 +170,9 @@ export function createNotionModels() {
     getRootPage,
     saveRootPage,
     getAcronymPageId,
-    getAcronymPageIdOrThrow,
     setAcronymPageId,
+    getFaqPageId,
+    setFaqPageId,
     createRootPage,
   }
 }

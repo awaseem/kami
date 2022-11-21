@@ -1,12 +1,14 @@
 import { createNotionClient } from '../lib/notion'
 import { NotionError } from '../utils/error'
-import { getUserLink } from '../utils/links'
+import { getChannelLink, getUserLink } from '../utils/links'
 
 export interface CreateFaqArgs {
   accessToken: string
   databaseId: string
   question: string
-  channel: string
+  channelId: string
+  channelName: string
+  threadId: string
   userId: string
   username: string
 }
@@ -15,7 +17,9 @@ async function createFaq({
   accessToken,
   databaseId,
   question,
-  channel,
+  channelId,
+  channelName,
+  threadId,
   userId,
   username,
 }: CreateFaqArgs) {
@@ -40,7 +44,19 @@ async function createFaq({
           rich_text: [
             {
               text: {
-                content: channel,
+                content: channelName,
+                link: {
+                  url: getChannelLink(channelId),
+                },
+              },
+            },
+          ],
+        },
+        Thread: {
+          rich_text: [
+            {
+              text: {
+                content: threadId,
               },
             },
           ],
@@ -100,6 +116,10 @@ async function createFaqDatabase(accessToken: string, parentId: string) {
           type: 'rich_text',
           rich_text: {},
         },
+        Thread: {
+          type: 'rich_text',
+          rich_text: {},
+        },
         ['Add by (Slack ID)']: {
           type: 'rich_text',
           rich_text: {},
@@ -121,7 +141,7 @@ async function createFaqDatabase(accessToken: string, parentId: string) {
   }
 }
 
-export function createAcronymModel() {
+export function createFaqModel() {
   return {
     createFaqDatabase,
     createFaq,
