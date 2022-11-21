@@ -6,22 +6,22 @@ export interface CreateFaqArgs {
   accessToken: string
   databaseId: string
   question: string
-  channelUrl: string
+  threadUrl: string
   channelName: string
-  threadId: string
   userId: string
   username: string
+  answer: string
 }
 
 async function createFaq({
   accessToken,
   databaseId,
   question,
-  channelUrl,
   channelName,
-  threadId,
+  threadUrl,
   userId,
   username,
+  answer,
 }: CreateFaqArgs) {
   try {
     const notion = createNotionClient(accessToken)
@@ -40,23 +40,14 @@ async function createFaq({
             },
           ],
         },
-        Channel: {
+        Location: {
           rich_text: [
             {
               text: {
                 content: channelName,
                 link: {
-                  url: channelUrl,
+                  url: threadUrl,
                 },
-              },
-            },
-          ],
-        },
-        Thread: {
-          rich_text: [
-            {
-              text: {
-                content: threadId,
               },
             },
           ],
@@ -74,6 +65,45 @@ async function createFaq({
           ],
         },
       },
+      children: [
+        {
+          object: 'block',
+          heading_1: {
+            rich_text: [
+              {
+                text: {
+                  content: '✅ Answer',
+                },
+              },
+            ],
+          },
+        },
+        {
+          object: 'block',
+          paragraph: {
+            rich_text: [
+              {
+                text: {
+                  content: answer,
+                },
+              },
+            ],
+            color: 'default',
+          },
+        },
+        {
+          object: 'block',
+          heading_1: {
+            rich_text: [
+              {
+                text: {
+                  content: '📓 Additional notes',
+                },
+              },
+            ],
+          },
+        },
+      ],
     })
   } catch (error) {
     throw new NotionError(error as Error)
@@ -112,11 +142,7 @@ async function createFaqDatabase(accessToken: string, parentId: string) {
           type: 'title',
           title: {},
         },
-        Channel: {
-          type: 'rich_text',
-          rich_text: {},
-        },
-        Thread: {
+        Location: {
           type: 'rich_text',
           rich_text: {},
         },

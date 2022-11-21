@@ -1,16 +1,15 @@
 import { Models } from '../models'
 import { ControllerError } from '../utils/error'
-import { getChannelLink } from '../utils/links'
 
 export interface CreateFaqArgs {
   accessToken: string
   teamId: string
   question: string
-  channelId: string
   channelName: string
-  threadId: string
+  threadUrl: string
   userId: string
   username: string
+  answer: string
 }
 
 export function createFaqControllers(models: Models) {
@@ -18,11 +17,11 @@ export function createFaqControllers(models: Models) {
     accessToken,
     teamId,
     question,
-    channelId,
     channelName,
-    threadId,
+    threadUrl,
     userId,
     username,
+    answer,
   }: CreateFaqArgs) {
     const databaseId = await models.notion.getFaqPageId(teamId)
     if (!databaseId) {
@@ -34,12 +33,12 @@ export function createFaqControllers(models: Models) {
     await models.faq.createFaq({
       databaseId,
       accessToken,
-      channelUrl: getChannelLink(channelId),
-      channelName,
       userId,
       username,
-      threadId,
+      threadUrl,
       question,
+      answer,
+      channelName: `#${channelName}`,
     })
   }
 
