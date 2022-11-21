@@ -17,6 +17,22 @@ export class ControllerError extends Error {
   }
 }
 
+export class UserViewError extends Error {
+  constructor(msg: string) {
+    super(msg)
+    // Set the prototype explicitly.
+    Object.setPrototypeOf(this, UserViewError.prototype)
+  }
+
+  async postMessage(client: WebClient, userId: string) {
+    await client.chat.postMessage({
+      channel: userId,
+      mrkdwn: true,
+      text: `🤔 Whoops! We encountered a small issue: ${this.message}`,
+    })
+  }
+}
+
 export class NotionError extends Error {
   constructor(error: Error) {
     super(`[NOTION ERROR]: ${error.message}`)
@@ -41,7 +57,11 @@ export async function handleSlackError(
   client: WebClient,
 ) {
   try {
-    if (error instanceof NotionError || error instanceof ControllerError) {
+    if (
+      error instanceof NotionError ||
+      error instanceof ControllerError ||
+      error instanceof UserViewError
+    ) {
       await error.postMessage(client, userId)
       return
     }

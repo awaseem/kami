@@ -1,12 +1,12 @@
 import { createNotionClient } from '../lib/notion'
 import { NotionError } from '../utils/error'
-import { getChannelLink, getUserLink } from '../utils/links'
+import { getUserLink } from '../utils/links'
 
 export interface CreateFaqArgs {
   accessToken: string
   databaseId: string
   question: string
-  channelId: string
+  channelUrl: string
   channelName: string
   threadId: string
   userId: string
@@ -17,7 +17,7 @@ async function createFaq({
   accessToken,
   databaseId,
   question,
-  channelId,
+  channelUrl,
   channelName,
   threadId,
   userId,
@@ -46,7 +46,7 @@ async function createFaq({
               text: {
                 content: channelName,
                 link: {
-                  url: getChannelLink(channelId),
+                  url: channelUrl,
                 },
               },
             },
