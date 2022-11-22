@@ -87,7 +87,9 @@ export function createAcronymHandlers(app: App, controller: Controllers) {
 
   app.shortcut(
     DEFINE_ACRONYM_SHORTCUT_MESSAGE,
-    async ({ ack, shortcut, client, context, say }) => {
+    async ({ ack, shortcut, client, context }) => {
+      const userId = shortcut.user.id
+
       try {
         await ack()
 
@@ -99,30 +101,32 @@ export function createAcronymHandlers(app: App, controller: Controllers) {
           return
         }
 
+        const channelId = shortcut.channel.id
+        const threadTs = shortcut.message.thread_ts
+
         const acronymMessage = await controller.acronym.defineAcronym({
           messageBlocks: shortcut.message.blocks,
           teamId,
         })
-        if (!acronymMessage) {
+
+        const username = shortcut.user.name
+        const message = acronymMessage ?? 'Sorry no acronyms were found.'
+        const tagAndQuoteMessage = `<@${username}> for message:\n>${shortcut.message.text}\n${message}`
+
+        // If definition was requested in thread
+        if (threadTs) {
           await saySilent(
             client,
-            shortcut.channel.id,
-            shortcut.user.id,
-            'Sorry no acronyms were found.',
-            shortcut.message.thread_ts,
+            channelId,
+            userId,
+            tagAndQuoteMessage,
+            threadTs,
           )
           return
         }
-
-        await saySilent(
-          client,
-          shortcut.channel.id,
-          shortcut.user.id,
-          acronymMessage,
-          shortcut.message.thread_ts,
-        )
+        await saySilent(client, channelId, userId, tagAndQuoteMessage)
       } catch (error) {
-        handleSlackError(error as Error, shortcut.user.id, client)
+        handleSlackError(error as Error, userId, client)
       }
     },
   )

@@ -37,7 +37,8 @@ export function getFoundAcronyms(text: string): string[] | undefined {
 export function foundAcronymMessage(acronyms: Acronym[]): string {
   const acronymMessage = acronyms
     .map(
-      (acr) => `*${acr.acronym}*: ${acr.definition}. <${acr.link}|Notion Page>`,
+      (acr) =>
+        `• *${acr.acronym}*: ${acr.definition}. <${acr.link}|Notion Page>`,
     )
     .join('\n')
 
