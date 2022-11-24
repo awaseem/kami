@@ -19,6 +19,7 @@ export interface DefineAcronymArgs {
   messageBlocks?: Block[]
   plainText?: string
   teamId: string
+  username: string
 }
 
 export function createAcronymControllers(models: Models) {
@@ -54,6 +55,7 @@ export function createAcronymControllers(models: Models) {
     plainText,
     messageBlocks,
     teamId,
+    username,
   }: DefineAcronymArgs) {
     const accessToken =
       await models.accessTokens.notionAccessTokenStore.getAccessToken(teamId)
@@ -68,7 +70,7 @@ export function createAcronymControllers(models: Models) {
 
     const acronyms = getFoundAcronyms(message)
     if (!acronyms) {
-      return undefined
+      return 'Sorry no acronyms were found.'
     }
 
     const databaseId = await models.notion.getAcronymPageId(teamId)
@@ -82,10 +84,15 @@ export function createAcronymControllers(models: Models) {
       acronyms,
     )
     if (foundAcronyms.length === 0) {
-      return undefined
+      return 'Sorry no acronyms were found.'
     }
 
-    return foundAcronymMessage(foundAcronyms)
+    const foundAcronymsMessage = foundAcronymMessage(foundAcronyms)
+    const quotedMessage = message
+      ?.split('\n')
+      ?.map((text) => `>${text}`)
+      ?.join('\n')
+    return `<@${username}> for message:\n${quotedMessage}\n${foundAcronymsMessage}`
   }
 
   return Object.freeze({
