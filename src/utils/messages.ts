@@ -1,4 +1,5 @@
-import { Acronym } from './notion'
+import { Acronym, Question } from './notion'
+import { removeStopwords } from 'stopword'
 
 const ACRONYM_MATCHER = /\b[A-Z]*[a-z]*[A-Z]s?\d*[A-Z]*[-\w+]\b/g
 
@@ -46,4 +47,19 @@ export function foundAcronymMessage(acronyms: Acronym[]): string {
 
 ${acronymMessage}
 `
+}
+
+export function foundFaqMessage(questions: Question[]): string {
+  const faqMessage = questions
+    .map((acr) => `• *${acr.question}* - <${acr.link}|Notion answer Page>`)
+    .join('\n')
+
+  return `Here's similar questions asked 🔮:
+
+${faqMessage}
+`
+}
+
+export function getKeywords(text: string): string[] {
+  return removeStopwords(text.split(' '))
 }

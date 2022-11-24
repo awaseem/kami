@@ -10,6 +10,7 @@
     "@types/jest": "~29.1",
     "@types/node": "~16",
     "@types/node-fetch": "^2.6.2",
+    "@types/stopword": "^2.0.0",
     "@typescript-eslint/eslint-plugin": "~5.39",
     "@typescript-eslint/parser": "~5.39",
     "concurrently": "^7.5.0",
@@ -46,6 +47,7 @@
     "@upstash/redis": "^1.16.0",
     "dotenv": "^16.0.3",
     "node-fetch": "^2.6.7",
+    "stopword": "^2.0.5",
     "tslib": "~2.4",
     "yup": "^0.32.11"
   },

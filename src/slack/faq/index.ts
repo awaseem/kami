@@ -4,12 +4,13 @@ import { handleSlackError, UserViewError } from '../../utils/error'
 import { sayToThread } from '../../utils/slack'
 
 const CREATE_FAQ_SHORTCUT_MESSAGE = 'create_faq_message_shortcut'
+const SEARCH_FAQ_SHORTCUT_MESSAGE = 'search_faq_shortcut_message'
 
 export function createFaqHandlers(app: App, controllers: Controllers) {
   app.shortcut(
     CREATE_FAQ_SHORTCUT_MESSAGE,
     async ({ client, shortcut, ack, context, body }) => {
-      const userId = body.user.id
+      const userId = shortcut.user.id
 
       try {
         await ack()
@@ -79,6 +80,36 @@ export function createFaqHandlers(app: App, controllers: Controllers) {
           `Hi 👋, We created the following <${page.url}|notion page> for this FAQ.`,
           threadTs,
         )
+      } catch (error) {
+        handleSlackError(error as Error, userId, client)
+      }
+    },
+  )
+
+  app.shortcut(
+    SEARCH_FAQ_SHORTCUT_MESSAGE,
+    async ({ client, shortcut, ack, context }) => {
+      const userId = shortcut.user.id
+      try {
+        await ack()
+
+        const teamId = context.teamId
+        if (!teamId) {
+          throw new Error('invalid team id.')
+        }
+        if (shortcut.type !== 'message_action') {
+          return
+        }
+
+        const message = shortcut.message.text
+        if (!message) {
+          throw new Error('failed to find message')
+        }
+        const channelId = shortcut.channel.id
+        const messageTs = shortcut.message.thread_ts ?? shortcut.message_ts
+
+        const faqMessage = await controllers.faq.searchFaq({ teamId, message })
+        await sayToThread(client, channelId, userId, faqMessage, messageTs)
       } catch (error) {
         handleSlackError(error as Error, userId, client)
       }
