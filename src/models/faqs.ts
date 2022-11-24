@@ -167,9 +167,41 @@ async function createFaqDatabase(accessToken: string, parentId: string) {
   }
 }
 
+async function queryFaq(
+  accessToken: string,
+  databaseId: string,
+  keywords: string[],
+) {
+  const notion = createNotionClient(accessToken)
+  const uniqueKeywords = [...new Set(keywords)]
+
+  const orFilter = uniqueKeywords.flatMap((keyword) => [
+    {
+      property: 'Question',
+      title: {
+        contains: keyword,
+      },
+    },
+  ])
+
+  return await notion.databases.query({
+    database_id: databaseId,
+    filter: {
+      or: orFilter,
+    },
+    sorts: [
+      {
+        property: 'Created at',
+        direction: 'descending',
+      },
+    ],
+  })
+}
+
 export function createFaqModel() {
   return {
     createFaqDatabase,
     createFaq,
+    queryFaq,
   }
 }

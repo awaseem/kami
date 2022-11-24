@@ -49,7 +49,7 @@ async function queryAcronyms(
       ],
     })
 
-    return databaseResponseToAcronyms(response)
+    return response
   } catch (error) {
     throw new NotionError(error as Error)
   }

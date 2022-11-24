@@ -6,6 +6,7 @@ import {
   getFoundAcronyms,
   parseMessageBlocks,
 } from '../utils/messages'
+import { databaseResponseToAcronyms } from '../utils/notion'
 
 export interface CreateAcronymArgs {
   teamId: string
@@ -78,11 +79,13 @@ export function createAcronymControllers(models: Models) {
       throw new ControllerError('failed to find a page to store acronyms')
     }
 
-    const foundAcronyms = await models.acronyms.queryAcronyms(
+    const foundAcronymsResponse = await models.acronyms.queryAcronyms(
       accessToken,
       databaseId,
       acronyms,
     )
+
+    const foundAcronyms = databaseResponseToAcronyms(foundAcronymsResponse)
     if (foundAcronyms.length === 0) {
       return 'Sorry no acronyms were found.'
     }
