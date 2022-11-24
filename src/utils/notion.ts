@@ -12,6 +12,11 @@ export interface Acronym {
   link: string
 }
 
+export interface Question {
+  question: string
+  link: string
+}
+
 export function getPageIdFromNotionUrl(notionUrl: string): string | undefined {
   const url = new URL(notionUrl)
   const paths = url.pathname.split('/').filter((path) => path !== '')
@@ -61,9 +66,39 @@ function pageObjectResponseToAcronym(
   }
 }
 
+function pageObjectResponseToFaq(
+  page: PageObjectResponse,
+): Question | undefined {
+  const faqQuestionProp = page.properties['Question']
+
+  if (!faqQuestionProp) {
+    return
+  }
+
+  const question =
+    faqQuestionProp.type === 'title'
+      ? combineRichText(faqQuestionProp.title)
+      : undefined
+
+  if (!question) {
+    return
+  }
+
+  const link = getNotionPageUrl(page.id)
+  return {
+    link,
+    question,
+  }
+}
+
 export function databaseResponseToAcronyms(response: QueryDatabaseResponse) {
   const pages = response.results.filter(isFullPage) as Array<PageObjectResponse>
   return pages
     .map(pageObjectResponseToAcronym)
     .filter(Boolean) as Array<Acronym>
+}
+
+export function databaseResponseToFaqs(response: QueryDatabaseResponse) {
+  const pages = response.results.filter(isFullPage) as Array<PageObjectResponse>
+  return pages.map(pageObjectResponseToFaq).filter(Boolean) as Array<Question>
 }
