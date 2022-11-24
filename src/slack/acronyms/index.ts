@@ -111,7 +111,11 @@ export function createAcronymHandlers(app: App, controller: Controllers) {
 
         const username = shortcut.user.name
         const message = acronymMessage ?? 'Sorry no acronyms were found.'
-        const tagAndQuoteMessage = `<@${username}> for message:\n>${shortcut.message.text}\n${message}`
+        const quotedMessage = shortcut.message.text
+          ?.split('\n')
+          ?.map((text) => `>${text}`)
+          ?.join('\n')
+        const tagAndQuoteMessage = `<@${username}> for message:\n${quotedMessage}\n${message}`
 
         // If definition was requested in thread
         if (threadTs) {
