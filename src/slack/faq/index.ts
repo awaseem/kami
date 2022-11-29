@@ -106,7 +106,7 @@ export function createFaqHandlers(app: App, controllers: Controllers) {
           throw new Error('failed to find message')
         }
         const channelId = shortcut.channel.id
-        const messageTs = shortcut.message.thread_ts ?? shortcut.message_ts
+        const messageTs = shortcut.message.thread_ts
 
         const faqMessage = await controllers.faq.searchFaq({ teamId, message })
         await saySilent(client, channelId, userId, faqMessage, messageTs)
