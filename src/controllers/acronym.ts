@@ -1,5 +1,5 @@
 import { Models } from '../models'
-import { ControllerError } from '../utils/error'
+import { ControllerError, UserViewError } from '../utils/error'
 import {
   Block,
   foundAcronymMessage,
@@ -40,6 +40,20 @@ export function createAcronymControllers(models: Models) {
     const databaseId = await models.notion.getAcronymPageId(teamId)
     if (!databaseId) {
       throw new ControllerError('failed to find a page to store acronyms')
+    }
+
+    // Check to see if this acronym already exists or not
+    const foundAcronymResponse = await models.acronyms.queryAcronyms(
+      accessToken,
+      databaseId,
+      [acronym],
+    )
+    const foundAcronyms = databaseResponseToAcronyms(foundAcronymResponse)
+    if (foundAcronyms.length !== 0) {
+      const foundAcronymsMessage = foundAcronymMessage(foundAcronyms)
+      throw new UserViewError(
+        `This acronym already exists. ${foundAcronymsMessage}`,
+      )
     }
 
     await models.acronyms.createAcronym({
