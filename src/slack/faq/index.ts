@@ -1,7 +1,7 @@
 import { App } from '@slack/bolt'
 import { Controllers } from '../../controllers'
 import { handleSlackError, UserViewError } from '../../utils/error'
-import { sayToThread } from '../../utils/slack'
+import { saySilent, sayToThread } from '../../utils/slack'
 
 const CREATE_FAQ_SHORTCUT_MESSAGE = 'create_faq_message_shortcut'
 const SEARCH_FAQ_SHORTCUT_MESSAGE = 'search_faq_shortcut_message'
@@ -109,7 +109,7 @@ export function createFaqHandlers(app: App, controllers: Controllers) {
         const messageTs = shortcut.message.thread_ts ?? shortcut.message_ts
 
         const faqMessage = await controllers.faq.searchFaq({ teamId, message })
-        await sayToThread(client, channelId, userId, faqMessage, messageTs)
+        await saySilent(client, channelId, userId, faqMessage, messageTs)
       } catch (error) {
         handleSlackError(error as Error, userId, client)
       }
