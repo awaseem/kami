@@ -19,7 +19,7 @@ export function createSlackApp() {
   })
 
   // Register handlers
-  createAppHomeHandlers(app, models, controllers)
+  createAppHomeHandlers(app, controllers)
   createAcronymHandlers(app, controllers)
   createFaqHandlers(app, controllers)
 

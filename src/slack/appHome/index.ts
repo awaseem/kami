@@ -1,6 +1,5 @@
 import type { App } from '@slack/bolt'
 import { Controllers } from '../../controllers'
-import { Models } from '../../models'
 import { handleSlackError } from '../../utils/error'
 import { logEventError } from '../../utils/logger'
 import { getPageIdFromNotionUrl } from '../../utils/notion'
@@ -17,11 +16,7 @@ import { ErrorModel } from '../views/error'
 
 const APP_HOME_OPEN_EVENT = 'app_home_opened'
 
-export function createAppHomeHandlers(
-  app: App,
-  models: Models,
-  controllers: Controllers,
-) {
+export function createAppHomeHandlers(app: App, controllers: Controllers) {
   app.event(APP_HOME_OPEN_EVENT, async ({ context, client, event }) => {
     try {
       const teamId = context.teamId
@@ -29,8 +24,7 @@ export function createAppHomeHandlers(
         throw new Error('failed to find team id when create app home')
       }
 
-      const notionConnectUrl = models.notion.getNotionOauthUrl(teamId)
-
+      const notionConnectUrl = controllers.auth.getNotionSetupUrl(teamId)
       await createAppHome(client, event.user, notionConnectUrl)
     } catch (error) {
       logEventError(APP_HOME_OPEN_EVENT, error as Error)
@@ -54,10 +48,10 @@ export function createAppHomeHandlers(
           throw new Error('no valid trigger id or team id found.')
         }
 
-        const accessToken = await models.accessTokens.notion.getAccessToken(
+        const hasAccessToken = await controllers.auth.hasNotionAccessToken(
           teamId,
         )
-        if (!accessToken) {
+        if (!hasAccessToken) {
           await ErrorModel(
             client,
             triggerId,

@@ -176,3 +176,5 @@ export function createNotionModels() {
     createRootPage,
   }
 }
+
+export type NotionModel = ReturnType<typeof createNotionModels>

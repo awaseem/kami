@@ -1,5 +1,6 @@
 import { Models } from '../models'
 import { createAcronymControllers } from './acronym'
+import { createAuthController } from './auth'
 import { createFaqControllers } from './faq'
 import { createPageControllers } from './page'
 
@@ -10,5 +11,6 @@ export function createControllers(models: Models) {
     acronym: createAcronymControllers(models),
     page: createPageControllers(models),
     faq: createFaqControllers(models),
+    auth: createAuthController(models.notion, models.accessTokens),
   })
 }

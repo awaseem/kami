@@ -18,3 +18,5 @@ export function createAccessTokensModel() {
     },
   })
 }
+
+export type AccessTokenModel = ReturnType<typeof createAccessTokensModel>
