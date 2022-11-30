@@ -1,7 +1,6 @@
 import { createNotionClient } from '../lib/notion'
 import { NotionError } from '../utils/error'
 import { getUserLink } from '../utils/links'
-import { databaseResponseToAcronyms } from '../utils/notion'
 
 export interface CreateAcronymArgs {
   accessToken: string
