@@ -18,6 +18,8 @@ export function createNotionAuthRoute(
       accessToken,
     )
 
-    res.status(200).send('Notion integration complete!')
+    res
+      .status(200)
+      .send('Notion integration complete! You may now close this tab.')
   })
 }
