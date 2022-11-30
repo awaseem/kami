@@ -110,7 +110,13 @@ export function createAcronymHandlers(app: App, controller: Controllers) {
           username: shortcut.user.name,
         })
 
-        await saySilent(client, channelId, userId, acronymMessage, threadTs)
+        await saySilent(
+          client,
+          channelId,
+          userId,
+          acronymMessage ?? 'Sorry no acronyms were found.',
+          threadTs,
+        )
       } catch (error) {
         handleSlackError(error as Error, userId, client)
       }

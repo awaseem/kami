@@ -70,7 +70,7 @@ export function createAcronymControllers(models: Models) {
     messageBlocks,
     teamId,
     username,
-  }: DefineAcronymArgs) {
+  }: DefineAcronymArgs): Promise<string | undefined> {
     const accessToken = await models.accessTokens.notion.getAccessToken(teamId)
     if (!accessToken) {
       throw new ControllerError('no access token has been found')
@@ -83,7 +83,7 @@ export function createAcronymControllers(models: Models) {
 
     const acronyms = getFoundAcronyms(message)
     if (!acronyms) {
-      return 'Sorry no acronyms were found.'
+      return undefined
     }
 
     const databaseId = await models.notion.getAcronymPageId(teamId)
@@ -99,7 +99,7 @@ export function createAcronymControllers(models: Models) {
 
     const foundAcronyms = databaseResponseToAcronyms(foundAcronymsResponse)
     if (foundAcronyms.length === 0) {
-      return 'Sorry no acronyms were found.'
+      return undefined
     }
 
     const foundAcronymsMessage = foundAcronymMessage(foundAcronyms)
