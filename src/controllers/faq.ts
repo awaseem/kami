@@ -46,7 +46,7 @@ export function createFaqControllers(models: Models) {
     )
 
     const faqs = databaseResponseToFaqs(faqResponse)
-    return foundFaqMessage(faqs)
+    return faqs.length !== 0 ? foundFaqMessage(faqs) : undefined
   }
 
   async function createFaq({
