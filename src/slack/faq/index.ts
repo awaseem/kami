@@ -33,12 +33,10 @@ export function createFaqHandlers(app: App, controllers: Controllers) {
         teamId,
         message: messageText,
       })
-      if (!faqMessage) {
-        // Do nothing if no faq message is returned
+      if (faqMessage) {
+        await sayToThread(client, channelId, userId, faqMessage, messageTs)
         return
       }
-
-      await sayToThread(client, channelId, userId, faqMessage, messageTs)
     } catch (error) {
       handleSlackError(error as Error, userId, client)
     }
