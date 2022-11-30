@@ -21,8 +21,7 @@ export interface SearchFaqArgs {
 
 export function createFaqControllers(models: Models) {
   async function searchFaq({ teamId, message }: SearchFaqArgs) {
-    const accessToken =
-      await models.accessTokens.notionAccessTokenStore.getAccessToken(teamId)
+    const accessToken = await models.accessTokens.notion.getAccessToken(teamId)
     if (!accessToken) {
       throw new ControllerError('no access token has been found')
     }
@@ -58,8 +57,7 @@ export function createFaqControllers(models: Models) {
     username,
     answer,
   }: CreateFaqArgs) {
-    const accessToken =
-      await models.accessTokens.notionAccessTokenStore.getAccessToken(teamId)
+    const accessToken = await models.accessTokens.notion.getAccessToken(teamId)
     if (!accessToken) {
       throw new ControllerError('no access token has been found')
     }

@@ -3,8 +3,7 @@ import { ControllerError } from '../utils/error'
 
 export function createPageControllers(models: Models) {
   async function doesPageExist(teamId: string, pageId: string) {
-    const accessToken =
-      await models.accessTokens.notionAccessTokenStore.getAccessToken(teamId)
+    const accessToken = await models.accessTokens.notion.getAccessToken(teamId)
     if (!accessToken) {
       throw new ControllerError('no access token has been found')
     }
@@ -18,8 +17,7 @@ export function createPageControllers(models: Models) {
   }
 
   async function createRootAndPages(teamId: string, parentPageId: string) {
-    const accessToken =
-      await models.accessTokens.notionAccessTokenStore.getAccessToken(teamId)
+    const accessToken = await models.accessTokens.notion.getAccessToken(teamId)
     if (!accessToken) {
       throw new ControllerError('no access token has been found')
     }

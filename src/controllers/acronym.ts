@@ -31,8 +31,7 @@ export function createAcronymControllers(models: Models) {
     acronym,
     definition,
   }: CreateAcronymArgs) {
-    const accessToken =
-      await models.accessTokens.notionAccessTokenStore.getAccessToken(teamId)
+    const accessToken = await models.accessTokens.notion.getAccessToken(teamId)
     if (!accessToken) {
       throw new ControllerError('no access token has been found')
     }
@@ -72,8 +71,7 @@ export function createAcronymControllers(models: Models) {
     teamId,
     username,
   }: DefineAcronymArgs) {
-    const accessToken =
-      await models.accessTokens.notionAccessTokenStore.getAccessToken(teamId)
+    const accessToken = await models.accessTokens.notion.getAccessToken(teamId)
     if (!accessToken) {
       throw new ControllerError('no access token has been found')
     }

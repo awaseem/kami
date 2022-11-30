@@ -16,12 +16,9 @@ export async function validNotionIntegration({
   client,
   triggerId,
 }: ValidNotionIntegrationArgs) {
-  const validIntegration =
-    await models.accessTokens.notionAccessTokenStore.isValidNotionInstall(
-      teamId,
-    )
+  const accessToken = await models.accessTokens.notion.getAccessToken(teamId)
 
-  if (!validIntegration) {
+  if (!accessToken) {
     await ErrorModel(
       client,
       triggerId,

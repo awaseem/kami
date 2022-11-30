@@ -13,7 +13,7 @@ export function createNotionAuthRoute(
     }
 
     const accessToken = await models.notion.oauthExchange(code.toString())
-    await models.accessTokens.notionAccessTokenStore.setAccessToken(
+    await models.accessTokens.notion.setAccessToken(
       state.toString(),
       accessToken,
     )
