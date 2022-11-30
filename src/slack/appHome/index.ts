@@ -4,7 +4,6 @@ import { Models } from '../../models'
 import { handleSlackError } from '../../utils/error'
 import { logEventError } from '../../utils/logger'
 import { getPageIdFromNotionUrl } from '../../utils/notion'
-import { validNotionIntegration } from '../common'
 import {
   createAppHome,
   createSetupPageModel,
@@ -14,6 +13,7 @@ import {
   SETUP_PAGE_URL_INPUT,
   SETUP_PAGE_URL_INPUT_ACTION,
 } from '../views/appHome'
+import { ErrorModel } from '../views/error'
 
 const APP_HOME_OPEN_EVENT = 'app_home_opened'
 
@@ -54,7 +54,17 @@ export function createAppHomeHandlers(
           throw new Error('no valid trigger id or team id found.')
         }
 
-        await validNotionIntegration({ models, teamId, triggerId, client })
+        const accessToken = await models.accessTokens.notion.getAccessToken(
+          teamId,
+        )
+        if (!accessToken) {
+          await ErrorModel(
+            client,
+            triggerId,
+            `Your integration to notion has not been setup. Please connect with notion before selecting a root page.`,
+          )
+          return
+        }
 
         await createSetupPageModel(client, triggerId)
       } catch (error) {
