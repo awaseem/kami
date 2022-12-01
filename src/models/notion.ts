@@ -1,9 +1,9 @@
 import fetch from 'node-fetch'
 import { createNotionClient } from '../lib/notion'
 import {
-  getNotionAuthUrl,
+  ENV_notionAuthUrl,
+  ENV_notionRedirectUrl,
   getNotionBasicAuth,
-  getNotionRedirectUrl,
 } from '../utils/env'
 import { NotionError } from '../utils/error'
 import { logError } from '../utils/logger'
@@ -19,7 +19,7 @@ async function oauthExchange(code: string) {
   const body = {
     grant_type: 'authorization_code',
     code,
-    redirect_uri: getNotionRedirectUrl(),
+    redirect_uri: ENV_notionRedirectUrl,
   }
 
   const response = await fetch(NOTION_AUTH_EXCHANGE_ROUTE, {
@@ -36,8 +36,8 @@ async function oauthExchange(code: string) {
 }
 
 function getNotionOauthUrl(teamId: string) {
-  const baseUrl = getNotionAuthUrl()
-  const redirectUri = getNotionRedirectUrl()
+  const baseUrl = ENV_notionAuthUrl
+  const redirectUri = ENV_notionRedirectUrl
 
   return `${baseUrl}&redirect_uri=${encodeURIComponent(
     redirectUri,

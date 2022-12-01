@@ -1,10 +1,10 @@
 import { Redis } from '@upstash/redis/with-fetch'
-import { getRedisToken, getRedisUrl } from '../utils/env'
+import { ENV_redisToken, ENV_redisUrl } from '../utils/env'
 
 function createUpstashClient() {
   return new Redis({
-    url: getRedisUrl(),
-    token: getRedisToken(),
+    url: ENV_redisUrl,
+    token: ENV_redisToken,
   })
 }
 

@@ -2,10 +2,10 @@ import dotenv from 'dotenv'
 dotenv.config()
 
 import { createSlackApp } from './slack/app'
-import { getPort } from './utils/env'
+import { ENV_port } from './utils/env'
 
 async function main() {
-  const port = getPort()
+  const port = ENV_port
   const app = createSlackApp()
 
   await app.start(port)

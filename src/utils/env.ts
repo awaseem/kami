@@ -8,25 +8,15 @@ export function getEnvOrExit(key: string) {
   return env
 }
 
-export function getSlackSigningSecret() {
-  return getEnvOrExit('SLACK_SIGNING_SECRET')
-}
+export const ENV_slackSigningSecret = getEnvOrExit('SLACK_SIGNING_SECRET')
+export const ENV_slackToken = getEnvOrExit('SLACK_BOT_TOKEN')
+export const ENV_slackAppId = getEnvOrExit('SLACK_APP_ID')
 
-export function getSlackToken() {
-  return getEnvOrExit('SLACK_BOT_TOKEN')
-}
-
-export function getSlackAppId() {
-  return getEnvOrExit('SLACK_APP_ID')
-}
-
-export function getPort() {
-  return getEnvOrExit('PORT')
-}
-
-export function getNotionAuthUrl() {
-  return getEnvOrExit('NOTION_AUTH_URL')
-}
+export const ENV_port = getEnvOrExit('PORT')
+export const ENV_notionAuthUrl = getEnvOrExit('NOTION_AUTH_URL')
+export const ENV_notionRedirectUrl = getEnvOrExit('NOTION_REDIRECT_URL')
+export const ENV_redisUrl = getEnvOrExit('REDIS_URL')
+export const ENV_redisToken = getEnvOrExit('REDIS_TOKEN')
 
 export function getNotionBasicAuth() {
   const clientID = getEnvOrExit('NOTION_OAUTH_CLIENT_ID')
@@ -36,16 +26,4 @@ export function getNotionBasicAuth() {
   const base64Encoded = Buffer.from(token).toString('base64')
 
   return `Basic ${base64Encoded}`
-}
-
-export function getNotionRedirectUrl() {
-  return getEnvOrExit('NOTION_REDIRECT_URL')
-}
-
-export function getRedisUrl() {
-  return getEnvOrExit('REDIS_URL')
-}
-
-export function getRedisToken() {
-  return getEnvOrExit('REDIS_TOKEN')
 }
