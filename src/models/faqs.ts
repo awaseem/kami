@@ -11,6 +11,7 @@ export interface CreateFaqArgs {
   userId: string
   username: string
   answer: string
+  parentMessageTs: string
 }
 
 async function createFaq({
@@ -22,6 +23,7 @@ async function createFaq({
   userId,
   username,
   answer,
+  parentMessageTs,
 }: CreateFaqArgs) {
   try {
     const notion = createNotionClient(accessToken)
@@ -36,6 +38,15 @@ async function createFaq({
             {
               text: {
                 content: question,
+              },
+            },
+          ],
+        },
+        SlackMessageId: {
+          rich_text: [
+            {
+              text: {
+                content: parentMessageTs,
               },
             },
           ],
@@ -146,6 +157,10 @@ async function createFaqDatabase(accessToken: string, parentId: string) {
           type: 'rich_text',
           rich_text: {},
         },
+        SlackMessageId: {
+          type: 'rich_text',
+          rich_text: {},
+        },
         ['Add by (Slack ID)']: {
           type: 'rich_text',
           rich_text: {},
@@ -198,10 +213,62 @@ async function queryFaq(
   })
 }
 
+async function getFaqBySlackMessageTs(
+  accessToken: string,
+  databaseId: string,
+  slackMessageTs: string,
+) {
+  const notion = createNotionClient(accessToken)
+
+  return await notion.databases.query({
+    database_id: databaseId,
+    filter: {
+      property: 'SlackMessageId',
+      rich_text: {
+        equals: slackMessageTs,
+      },
+    },
+    sorts: [
+      {
+        property: 'Created at',
+        direction: 'descending',
+      },
+    ],
+  })
+}
+
+async function appendAnswerToPage(
+  accessToken: string,
+  pageId: string,
+  answer: string,
+) {
+  const notion = createNotionClient(accessToken)
+
+  return await notion.blocks.children.append({
+    block_id: pageId,
+    children: [
+      {
+        paragraph: {
+          rich_text: [
+            {
+              text: {
+                content: answer,
+              },
+            },
+          ],
+          color: 'default',
+        },
+      },
+    ],
+  })
+}
+
 export function createFaqModel() {
   return {
     createFaqDatabase,
     createFaq,
     queryFaq,
+    getFaqBySlackMessageTs,
+    appendAnswerToPage,
   }
 }

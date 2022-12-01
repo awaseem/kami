@@ -93,12 +93,21 @@ export function createFaqHandlers(app: App, controllers: Controllers) {
           inclusive: true,
           latest: threadTs,
         })
-        const question = parentMessage.messages?.[0].text
-        if (!question) {
+        const questionMessage = parentMessage.messages?.[0]
+        if (!questionMessage) {
           throw new Error('Failed to find question')
         }
 
-        const page = await controllers.faq.createFaq({
+        const question = questionMessage.text
+        const parentMessageTs = questionMessage.ts
+        if (!question) {
+          throw new Error('Failed to find question')
+        }
+        if (!parentMessageTs) {
+          throw new Error('Failed to find question message ts')
+        }
+
+        const upsertResponse = await controllers.faq.upsertFaq({
           teamId,
           channelName,
           userId,
@@ -106,13 +115,16 @@ export function createFaqHandlers(app: App, controllers: Controllers) {
           username,
           threadUrl: permalink,
           answer,
+          parentMessageTs,
         })
 
         await sayToThread(
           client,
           channelId,
           userId,
-          `Hi 👋, We created the following <${page.url}|notion page> for this FAQ.`,
+          `Hi 👋, We ${
+            upsertResponse.type === 'UPDATE' ? 'updated' : 'created'
+          } the following <${upsertResponse.url}|notion page> for this FAQ.`,
           threadTs,
         )
       } catch (error) {
