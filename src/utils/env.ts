@@ -18,6 +18,8 @@ export const ENV_notionRedirectUrl = getEnvOrExit('NOTION_REDIRECT_URL')
 export const ENV_redisUrl = getEnvOrExit('REDIS_URL')
 export const ENV_redisToken = getEnvOrExit('REDIS_TOKEN')
 
+export const ENV_openApiKey = getEnvOrExit('OPEN_AI_API_KEY')
+
 export function getNotionBasicAuth() {
   const clientID = getEnvOrExit('NOTION_OAUTH_CLIENT_ID')
   const clientSecret = getEnvOrExit('NOTION_OAUTH_CLIENT_SECRET')
