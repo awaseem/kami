@@ -2,8 +2,8 @@ import { ENV_slackAppId } from './env'
 
 const slackAppId = ENV_slackAppId
 
-export function getAppHomeDeepLink(teamId: string) {
-  return `slack://app?team=${teamId}&id=${slackAppId}`
+export function getAppHomeDeepLink(teamId: string, appId: string = slackAppId) {
+  return `slack://app?team=${teamId}&id=${appId}`
 }
 
 export function getChannelLink(channelId: string) {

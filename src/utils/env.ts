@@ -1,4 +1,8 @@
 export function getEnvOrExit(key: string) {
+  if (process.env.NODE_ENV == 'test') {
+    return ''
+  }
+
   const env = process.env[key]
   if (!env) {
     console.error(`Failed to locate key: ${key} in env variables`)
