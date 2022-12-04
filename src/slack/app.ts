@@ -6,6 +6,7 @@ import { ENV_slackSigningSecret, ENV_slackToken } from '../utils/env'
 import { createAppHomeHandlers } from './appHome'
 import { createAcronymHandlers } from './acronyms'
 import { createFaqHandlers } from './faq'
+import { createPageHandlers } from './page'
 
 export function createSlackApp() {
   const models = createModels()
@@ -22,6 +23,7 @@ export function createSlackApp() {
   createAppHomeHandlers(app, controllers)
   createAcronymHandlers(app, controllers)
   createFaqHandlers(app, controllers)
+  createPageHandlers(app, controllers)
 
   return app
 }
