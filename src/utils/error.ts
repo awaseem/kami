@@ -51,6 +51,22 @@ export class NotionError extends Error {
   }
 }
 
+export class OpenAPIError extends Error {
+  constructor(error: Error) {
+    super(`[OPEN API ERROR]: ${error.message}`)
+    // Set the prototype explicitly.
+    Object.setPrototypeOf(this, OpenAPIError.prototype)
+  }
+
+  async postMessage(client: WebClient, userId: string) {
+    await client.chat.postMessage({
+      channel: userId,
+      mrkdwn: true,
+      text: `🚨 Whoops! We failed to get a response from our AI service. Please try again later`,
+    })
+  }
+}
+
 export async function handleSlackError(
   error: Error,
   userId: string,
@@ -60,7 +76,8 @@ export async function handleSlackError(
     if (
       error instanceof NotionError ||
       error instanceof ControllerError ||
-      error instanceof UserViewError
+      error instanceof UserViewError ||
+      error instanceof OpenAPIError
     ) {
       await error.postMessage(client, userId)
       return
