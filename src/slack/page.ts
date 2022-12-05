@@ -30,9 +30,6 @@ export function createPageHandlers(app: App, controller: Controllers) {
         }
 
         const channelId = shortcut.channel.id
-
-        console.log(shortcut.message)
-
         const messageTs = shortcut.message_ts
         if (shortcut.message.thread_ts !== messageTs) {
           throw new UserViewError(
