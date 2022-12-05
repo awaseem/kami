@@ -1,6 +1,7 @@
 import { isFullPage } from '@notionhq/client'
 import { Models } from '../models'
 import { ControllerError } from '../utils/error'
+import { cleanSlackReplies, SlackReply } from '../utils/messages'
 
 export function createPageControllers(models: Models) {
   async function createPageFromPrompt(teamId: string, prompt: string) {
@@ -27,7 +28,52 @@ export function createPageControllers(models: Models) {
       accessToken,
       parentId,
       content,
-      heading: 'Generated content!',
+      heading: prompt,
+    })
+    if (!isFullPage(response)) {
+      throw new ControllerError(
+        'The page may have been created, but we received a non full page from Notion',
+      )
+    }
+
+    return response
+  }
+
+  async function createSummaryPageFromMessages(
+    teamId: string,
+    replies: SlackReply[],
+  ) {
+    const accessToken = await models.accessTokens.notion.getAccessToken(teamId)
+    if (!accessToken) {
+      throw new ControllerError('no access token has been found')
+    }
+
+    const parentId = await models.notion.getRootPage(teamId)
+    if (!parentId) {
+      throw new ControllerError(
+        'No root page found. Your notion configuration is not setup properly, please select a new page for content in the app home.',
+      )
+    }
+
+    const cleanReplies = cleanSlackReplies(replies)
+    if (cleanReplies.length === 0) {
+      throw new ControllerError(
+        'Not enough data to generate a summary for messages',
+      )
+    }
+
+    const summary = await models.ai.summarizeMessages(cleanReplies)
+    if (!summary) {
+      throw new ControllerError(
+        `AI model returned no results when generating a summary for messages.`,
+      )
+    }
+
+    const response = await models.page.createPageWithContent({
+      accessToken,
+      parentId,
+      content: summary,
+      heading: `Summary for ${cleanReplies[0]}`,
     })
     if (!isFullPage(response)) {
       throw new ControllerError(
@@ -85,5 +131,6 @@ export function createPageControllers(models: Models) {
     doesPageExist,
     createPageFromPrompt,
     createRootAndPages,
+    createSummaryPageFromMessages,
   })
 }
