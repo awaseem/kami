@@ -19,13 +19,17 @@ export const ENV_slackStateSecret = getEnvOrExit('SLACK_STATE_SECRET')
 
 export const ENV_slackAppId = getEnvOrExit('SLACK_APP_ID')
 
+export const ENV_hostname = getEnvOrExit('HOST_NAME')
 export const ENV_port = getEnvOrExit('PORT')
+
 export const ENV_notionAuthUrl = getEnvOrExit('NOTION_AUTH_URL')
 export const ENV_notionRedirectUrl = getEnvOrExit('NOTION_REDIRECT_URL')
 export const ENV_redisUrl = getEnvOrExit('REDIS_URL')
 export const ENV_redisToken = getEnvOrExit('REDIS_TOKEN')
 
 export const ENV_openApiKey = getEnvOrExit('OPEN_AI_API_KEY')
+
+export const ENV_stripeKey = getEnvOrExit('STRIPE_TOKEN')
 
 export function getNotionBasicAuth() {
   const clientID = getEnvOrExit('NOTION_OAUTH_CLIENT_ID')
