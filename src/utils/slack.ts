@@ -1,5 +1,15 @@
 import { WebClient } from '@slack/web-api'
 
+export const SLACK_SCOPES = [
+  'chat:write',
+  'channels:history',
+  'groups:history',
+  'im:history',
+  'mpim:history',
+  'commands',
+  'reactions:read',
+]
+
 export async function saySilent(
   client: WebClient,
   channelId: string,

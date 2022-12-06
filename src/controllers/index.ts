@@ -11,6 +11,10 @@ export function createControllers(models: Models) {
     acronym: createAcronymControllers(models),
     page: createPageControllers(models),
     faq: createFaqControllers(models),
-    auth: createAuthController(models.notion, models.accessTokens),
+    auth: createAuthController(
+      models.notion,
+      models.accessTokens,
+      models.slack,
+    ),
   })
 }

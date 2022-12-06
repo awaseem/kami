@@ -12,8 +12,11 @@ export function getEnvOrExit(key: string) {
   return env
 }
 
+export const ENV_slackClientId = getEnvOrExit('SLACK_CLIENT_ID')
+export const ENV_slackClintSecret = getEnvOrExit('SLACK_CLIENT_SECRET')
 export const ENV_slackSigningSecret = getEnvOrExit('SLACK_SIGNING_SECRET')
-export const ENV_slackToken = getEnvOrExit('SLACK_BOT_TOKEN')
+export const ENV_slackStateSecret = getEnvOrExit('SLACK_STATE_SECRET')
+
 export const ENV_slackAppId = getEnvOrExit('SLACK_APP_ID')
 
 export const ENV_port = getEnvOrExit('PORT')
