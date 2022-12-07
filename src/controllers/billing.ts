@@ -1,3 +1,4 @@
+import type Stripe from 'stripe'
 import { BillingModel } from '../models/billing'
 import { ControllerError } from '../utils/error'
 import { getAppHomeDeepLink } from '../utils/links'
@@ -20,7 +21,45 @@ export function createBillingController(billingModel: BillingModel) {
     return url
   }
 
+  async function handleStripeEvents(
+    data: any,
+    sig: string,
+    endpointSecret: string,
+  ) {
+    const event = billingModel.getStripeEvent(data, sig, endpointSecret)
+
+    const subscription = event.data.object as Stripe.Subscription
+    const teamId = subscription.metadata.teamId
+    if (!teamId) {
+      throw new ControllerError(
+        'Failed to find team ID when configuring billing',
+      )
+    }
+
+    if (
+      event.type === 'customer.subscription.created' ||
+      event.type === 'customer.subscription.updated'
+    ) {
+      const customerId = subscription.customer as string
+      const status = subscription.status
+      const subscriptionId = subscription.id
+
+      await billingModel.setBillingSubscription(teamId, {
+        customerId,
+        status,
+        subscriptionId,
+      })
+      return
+    }
+
+    if (event.type === 'customer.subscription.deleted') {
+      await billingModel.removeBillingSubscription(teamId)
+      return
+    }
+  }
+
   return Object.freeze({
     configureBilling,
+    handleStripeEvents,
   })
 }

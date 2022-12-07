@@ -45,6 +45,7 @@
     "@notionhq/client": "^2.2.2",
     "@slack/bolt": "^3.12.2",
     "@upstash/redis": "^1.16.0",
+    "body-parser": "^1.20.1",
     "dotenv": "^16.0.3",
     "node-fetch": "^2.6.7",
     "openai": "^3.1.0",

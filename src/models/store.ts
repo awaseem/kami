@@ -43,7 +43,8 @@ export function createRedisStore(namespace: string) {
 
   async function setObj<T>(key: string, value: T): Promise<void> {
     try {
-      client.set<T>(key, value)
+      const newKey = genKey(key)
+      client.set<T>(newKey, value)
     } catch (error) {
       console.log('Cache create obj miss due to error', error)
       return undefined
@@ -51,7 +52,8 @@ export function createRedisStore(namespace: string) {
   }
   async function getObj<T>(key: string): Promise<T | undefined> {
     try {
-      return client.get(key) as Promise<T | undefined>
+      const newKey = genKey(key)
+      return client.get(newKey) as Promise<T | undefined>
     } catch (error) {
       console.log('Cache miss obj due to error', error)
       return undefined

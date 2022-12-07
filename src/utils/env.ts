@@ -31,6 +31,7 @@ export const ENV_openApiKey = getEnvOrExit('OPEN_AI_API_KEY')
 
 export const ENV_stripeKey = getEnvOrExit('STRIPE_TOKEN')
 export const ENV_stripePricing = getEnvOrExit('STRIPE_PRICING_ID')
+export const ENV_stripeEndpointSecret = getEnvOrExit('STRIPE_ENDPOINT_SECRET')
 
 export function getNotionBasicAuth() {
   const clientID = getEnvOrExit('NOTION_OAUTH_CLIENT_ID')

@@ -1,7 +1,16 @@
 import stripe from '../lib/stripe'
 import { ENV_hostname, ENV_stripePricing } from '../utils/env'
+import { createRedisStore } from './store'
 
 export type BillingModel = ReturnType<typeof createBillingModel>
+
+export interface BillingSubscriptionObj {
+  subscriptionId: string
+  customerId: string
+  status: string
+}
+
+const billingStore = createRedisStore('billing|subscription')
 
 async function createSubscription(
   teamId: string,
@@ -25,6 +34,9 @@ async function createSubscription(
     success_url: hostName + successUrl,
     cancel_url: hostName + cancelUrl,
     metadata,
+    subscription_data: {
+      metadata,
+    },
   })
 
   if (!url) {
@@ -45,9 +57,34 @@ async function getBillingPortal(stripeCustomerId: string, returnUrl: string) {
   return portalSession.url
 }
 
+async function setBillingSubscription(
+  teamId: string,
+  billingObj: BillingSubscriptionObj,
+) {
+  await billingStore.setObj(teamId, billingObj)
+}
+
+async function getBillingSubscription(
+  teamId: string,
+): Promise<BillingSubscriptionObj | undefined> {
+  return billingStore.getObj(teamId)
+}
+
+async function removeBillingSubscription(teamId: string) {
+  await billingStore.remove(teamId)
+}
+
+function getStripeEvent(data: any, sig: string, endpointSecret: string) {
+  return stripe.webhooks.constructEvent(data, sig, endpointSecret)
+}
+
 export function createBillingModel() {
   return Object.freeze({
     createSubscription,
     getBillingPortal,
+    getStripeEvent,
+    setBillingSubscription,
+    getBillingSubscription,
+    removeBillingSubscription,
   })
 }
