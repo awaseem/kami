@@ -1,13 +1,31 @@
 import type Stripe from 'stripe'
-import { BillingModel } from '../models/billing'
+import { BillingModel, BillingSubscriptionObj } from '../models/billing'
 import { ControllerError } from '../utils/error'
 import { getAppHomeDeepLink } from '../utils/links'
 
 export type BillingController = ReturnType<typeof createBillingController>
 
+export interface BillingConfig {
+  subscription?: BillingSubscriptionObj
+  url: string
+}
+
 export function createBillingController(billingModel: BillingModel) {
   async function configureBilling(teamId: string) {
     const homeDeepLink = getAppHomeDeepLink(teamId)
+
+    const subscription = await billingModel.getBillingSubscription(teamId)
+    if (subscription) {
+      const portalUrl = await billingModel.getBillingPortal(
+        subscription.customerId,
+        homeDeepLink,
+      )
+      return {
+        subscription,
+        url: portalUrl,
+      }
+    }
+
     const url = await billingModel.createSubscription(
       teamId,
       homeDeepLink,
@@ -18,7 +36,9 @@ export function createBillingController(billingModel: BillingModel) {
       throw new ControllerError('No url found when configuring billing')
     }
 
-    return url
+    return {
+      url,
+    }
   }
 
   async function handleStripeEvents(

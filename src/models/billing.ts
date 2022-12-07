@@ -1,3 +1,4 @@
+import type Stripe from 'stripe'
 import stripe from '../lib/stripe'
 import { ENV_hostname, ENV_stripePricing } from '../utils/env'
 import { createRedisStore } from './store'
@@ -7,7 +8,7 @@ export type BillingModel = ReturnType<typeof createBillingModel>
 export interface BillingSubscriptionObj {
   subscriptionId: string
   customerId: string
-  status: string
+  status: Stripe.Subscription.Status
 }
 
 const billingStore = createRedisStore('billing|subscription')

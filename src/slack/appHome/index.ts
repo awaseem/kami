@@ -47,8 +47,8 @@ export function createAppHomeHandlers(app: App, controllers: Controllers) {
       throw new Error('no valid trigger id or team id found.')
     }
 
-    const url = await controllers.billing.configureBilling(teamId)
-    await createBillingViewModel(client, triggerId, url)
+    const billingConfig = await controllers.billing.configureBilling(teamId)
+    await createBillingViewModel(client, triggerId, billingConfig)
   })
 
   app.action(

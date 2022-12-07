@@ -1,4 +1,5 @@
 import type { WebClient } from '@slack/web-api'
+import type { BillingConfig } from '../../controllers/billing'
 
 export const NOTION_AUTH_BUTTON_CLICKED = 'notion_auth_button_clicked'
 export const NOTION_SETUP_PAGE_ID_BUTTON_CLICKED = 'notion_setup_page_id_button'
@@ -30,6 +31,9 @@ export async function createAppHome(
             text: `Welcome to Kami. We aspire to keep information out of the deep abyss of Slack.`,
             emoji: true,
           },
+        },
+        {
+          type: 'divider',
         },
         {
           type: 'header',
@@ -72,6 +76,9 @@ export async function createAppHome(
             },
             action_id: NOTION_SETUP_PAGE_ID_BUTTON_CLICKED,
           },
+        },
+        {
+          type: 'divider',
         },
         {
           type: 'header',
@@ -161,7 +168,7 @@ export const CONFIGURE_BILLING_BUTTON_CLICKED = 'billing_button_clicked'
 export function createBillingViewModel(
   client: WebClient,
   triggerId: string,
-  stripeCheckoutUrl: string,
+  { url, subscription }: BillingConfig,
 ) {
   return client.views.open({
     trigger_id: triggerId,
@@ -177,7 +184,16 @@ export function createBillingViewModel(
           type: 'section',
           text: {
             type: 'mrkdwn',
-            text: 'Configure billing for Kami',
+            text: `*Status: ${subscription?.status ?? 'incomplete'}* ${
+              subscription?.status === 'active' ? '✅' : '😞'
+            }`,
+          },
+        },
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `Configure billing for Kami`,
           },
           accessory: {
             type: 'button',
@@ -187,7 +203,7 @@ export function createBillingViewModel(
               emoji: true,
             },
             value: 'click_notion',
-            url: stripeCheckoutUrl,
+            url,
             action_id: CONFIGURE_BILLING_BUTTON_CLICKED,
           },
         },
