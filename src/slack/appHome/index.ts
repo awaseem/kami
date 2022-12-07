@@ -6,6 +6,7 @@ import { getPageIdFromNotionUrl } from '../../utils/notion'
 import {
   BILLING_BUTTON_CLICKED,
   createAppHome,
+  createBillingViewModel,
   createSetupPageModel,
   NOTION_AUTH_BUTTON_CLICKED,
   NOTION_SETUP_PAGE_ID_BUTTON_CLICKED,
@@ -36,17 +37,18 @@ export function createAppHomeHandlers(app: App, controllers: Controllers) {
     await ack()
   })
 
-  app.action(BILLING_BUTTON_CLICKED, async ({ ack, context }) => {
+  app.action(BILLING_BUTTON_CLICKED, async ({ ack, context, body, client }) => {
     await ack()
 
-    // TODO open modal to create billing
     const teamId = context.teamId
-    if (!teamId) {
-      return
+    const triggerId =
+      body.type === 'block_actions' ? body.trigger_id : undefined
+    if (!triggerId || !teamId) {
+      throw new Error('no valid trigger id or team id found.')
     }
 
     const url = await controllers.billing.configureBilling(teamId)
-    console.log(url)
+    await createBillingViewModel(client, triggerId, url)
   })
 
   app.action(

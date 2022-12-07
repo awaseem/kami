@@ -154,3 +154,44 @@ export function createSetupPageModel(client: WebClient, triggerId: string) {
     },
   })
 }
+
+export const BILLING_CALLBACK_ID = 'billing_callback_id'
+export const CONFIGURE_BILLING_BUTTON_CLICKED = 'billing_button_clicked'
+
+export function createBillingViewModel(
+  client: WebClient,
+  triggerId: string,
+  stripeCheckoutUrl: string,
+) {
+  return client.views.open({
+    trigger_id: triggerId,
+    view: {
+      type: 'modal',
+      callback_id: BILLING_CALLBACK_ID,
+      title: {
+        type: 'plain_text',
+        text: 'Configure Billing',
+      },
+      blocks: [
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: 'Configure billing for Kami',
+          },
+          accessory: {
+            type: 'button',
+            text: {
+              type: 'plain_text',
+              text: 'Configure',
+              emoji: true,
+            },
+            value: 'click_notion',
+            url: stripeCheckoutUrl,
+            action_id: CONFIGURE_BILLING_BUTTON_CLICKED,
+          },
+        },
+      ],
+    },
+  })
+}
