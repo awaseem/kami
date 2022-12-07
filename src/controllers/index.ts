@@ -1,6 +1,7 @@
 import { Models } from '../models'
 import { createAcronymControllers } from './acronym'
 import { createAuthController } from './auth'
+import { createBillingController } from './billing'
 import { createFaqControllers } from './faq'
 import { createPageControllers } from './page'
 
@@ -16,5 +17,6 @@ export function createControllers(models: Models) {
       models.accessTokens,
       models.slack,
     ),
+    billing: createBillingController(models.billing),
   })
 }

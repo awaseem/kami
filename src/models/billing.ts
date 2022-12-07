@@ -1,5 +1,7 @@
 import stripe from '../lib/stripe'
-import { ENV_hostname } from '../utils/env'
+import { ENV_hostname, ENV_stripePricing } from '../utils/env'
+
+export type BillingModel = ReturnType<typeof createBillingModel>
 
 async function createSubscription(
   teamId: string,
@@ -17,14 +19,9 @@ async function createSubscription(
     mode: 'subscription',
     line_items: [
       {
-        price: 'price_1MBrs4Kgh6ysjn61GoO3QZKL',
-        quantity: 1,
+        price: ENV_stripePricing,
       },
     ],
-    subscription_data: {
-      trial_period_days: 7,
-      metadata,
-    },
     success_url: hostName + successUrl,
     cancel_url: hostName + cancelUrl,
     metadata,

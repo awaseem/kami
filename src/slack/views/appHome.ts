@@ -3,6 +3,8 @@ import type { WebClient } from '@slack/web-api'
 export const NOTION_AUTH_BUTTON_CLICKED = 'notion_auth_button_clicked'
 export const NOTION_SETUP_PAGE_ID_BUTTON_CLICKED = 'notion_setup_page_id_button'
 
+export const BILLING_BUTTON_CLICKED = 'billing_button_clicked'
+
 export async function createAppHome(
   client: WebClient,
   userId: string,
@@ -69,6 +71,31 @@ export async function createAppHome(
               emoji: true,
             },
             action_id: NOTION_SETUP_PAGE_ID_BUTTON_CLICKED,
+          },
+        },
+        {
+          type: 'header',
+          text: {
+            type: 'plain_text',
+            text: 'Billing 💰',
+            emoji: true,
+          },
+        },
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: 'Configure billing for Kami.',
+          },
+          accessory: {
+            type: 'button',
+            text: {
+              type: 'plain_text',
+              text: 'Configure',
+              emoji: true,
+            },
+            value: 'click_billing',
+            action_id: BILLING_BUTTON_CLICKED,
           },
         },
       ],

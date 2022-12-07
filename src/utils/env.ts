@@ -30,6 +30,7 @@ export const ENV_redisToken = getEnvOrExit('REDIS_TOKEN')
 export const ENV_openApiKey = getEnvOrExit('OPEN_AI_API_KEY')
 
 export const ENV_stripeKey = getEnvOrExit('STRIPE_TOKEN')
+export const ENV_stripePricing = getEnvOrExit('STRIPE_PRICING_ID')
 
 export function getNotionBasicAuth() {
   const clientID = getEnvOrExit('NOTION_OAUTH_CLIENT_ID')

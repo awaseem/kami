@@ -8,6 +8,7 @@ import {
   ENV_slackStateSecret,
 } from '../utils/env'
 import { SLACK_SCOPES } from '../utils/slack'
+import { createBillingRoute } from './billing'
 import { createNotionAuthRoute } from './notion/auth'
 
 export function createRouter(models: Models, controllers: Controllers) {
@@ -33,6 +34,7 @@ export function createRouter(models: Models, controllers: Controllers) {
 
   // Register routes
   createNotionAuthRoute(receiver, models)
+  createBillingRoute(receiver, controllers.billing)
 
   return receiver
 }

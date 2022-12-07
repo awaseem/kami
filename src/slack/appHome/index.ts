@@ -4,6 +4,7 @@ import { handleSlackError } from '../../utils/error'
 import { logEventError } from '../../utils/logger'
 import { getPageIdFromNotionUrl } from '../../utils/notion'
 import {
+  BILLING_BUTTON_CLICKED,
   createAppHome,
   createSetupPageModel,
   NOTION_AUTH_BUTTON_CLICKED,
@@ -33,6 +34,19 @@ export function createAppHomeHandlers(app: App, controllers: Controllers) {
 
   app.action(NOTION_AUTH_BUTTON_CLICKED, async ({ ack }) => {
     await ack()
+  })
+
+  app.action(BILLING_BUTTON_CLICKED, async ({ ack, context }) => {
+    await ack()
+
+    // TODO open modal to create billing
+    const teamId = context.teamId
+    if (!teamId) {
+      return
+    }
+
+    const url = await controllers.billing.configureBilling(teamId)
+    console.log(url)
   })
 
   app.action(

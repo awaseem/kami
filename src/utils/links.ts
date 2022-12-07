@@ -1,4 +1,4 @@
-import { ENV_slackAppId } from './env'
+import { ENV_hostname, ENV_slackAppId } from './env'
 
 const slackAppId = ENV_slackAppId
 
@@ -16,4 +16,8 @@ export function getUserLink(userId: string) {
 
 export function getNotionPageUrl(pageId: string) {
   return `https://notion.so/${pageId.replaceAll('-', '')}`
+}
+
+export function getBillingLink() {
+  return `${ENV_hostname}/billing`
 }
