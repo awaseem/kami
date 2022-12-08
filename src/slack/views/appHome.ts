@@ -168,8 +168,10 @@ export const CONFIGURE_BILLING_BUTTON_CLICKED = 'billing_button_clicked'
 export function createBillingViewModel(
   client: WebClient,
   triggerId: string,
-  { url, subscription }: BillingConfig,
+  { url, subscription, billingDescriptions }: BillingConfig,
 ) {
+  const billingDescriptionLines = billingDescriptions?.join('\n\n')
+
   return client.views.open({
     trigger_id: triggerId,
     view: {
@@ -180,15 +182,6 @@ export function createBillingViewModel(
         text: 'Configure Billing',
       },
       blocks: [
-        {
-          type: 'section',
-          text: {
-            type: 'mrkdwn',
-            text: `*Status: ${subscription?.status ?? 'incomplete'}* ${
-              subscription?.status === 'active' ? '✅' : '😞'
-            }`,
-          },
-        },
         {
           type: 'section',
           text: {
@@ -205,6 +198,26 @@ export function createBillingViewModel(
             value: 'click_notion',
             url,
             action_id: CONFIGURE_BILLING_BUTTON_CLICKED,
+          },
+        },
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `*Status: ${subscription?.status ?? 'incomplete'}* ${
+              subscription?.status === 'active' ? '✅' : '😞'
+            }`,
+          },
+        },
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `${
+              billingDescriptionLines
+                ? `*Billing Usage:*\n\n${billingDescriptionLines}`
+                : undefined
+            }`,
           },
         },
       ],

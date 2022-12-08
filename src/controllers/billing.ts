@@ -7,6 +7,7 @@ export type BillingController = ReturnType<typeof createBillingController>
 
 export interface BillingConfig {
   subscription?: BillingSubscriptionObj
+  billingDescriptions?: string[]
   url: string
 }
 
@@ -31,8 +32,16 @@ export function createBillingController(billingModel: BillingModel) {
         subscription.customerId,
         homeDeepLink,
       )
+      const upcomingInvoice = await billingModel.getUpcomingInvoice(
+        subscription.customerId,
+      )
+      const billingDescriptions = upcomingInvoice.lines.data
+        .map((item) => item.description)
+        .filter(Boolean) as string[]
+
       return {
         subscription,
+        billingDescriptions,
         url: portalUrl,
       }
     }

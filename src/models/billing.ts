@@ -102,6 +102,12 @@ async function createUsageRecord(subscriptionItemId: string, usage: number) {
   }
 }
 
+async function getUpcomingInvoice(customerId: string) {
+  return stripe.invoices.retrieveUpcoming({
+    customer: customerId,
+  })
+}
+
 function getStripeEvent(data: any, sig: string, endpointSecret: string) {
   return stripe.webhooks.constructEvent(data, sig, endpointSecret)
 }
@@ -115,5 +121,6 @@ export function createBillingModel() {
     getBillingSubscription,
     removeBillingSubscription,
     createUsageRecord,
+    getUpcomingInvoice,
   })
 }
