@@ -6,6 +6,7 @@ import { createAppHomeHandlers } from './appHome'
 import { createAcronymHandlers } from './acronyms'
 import { createFaqHandlers } from './faq'
 import { createPageHandlers } from './page'
+import { createMiddlewares } from '../middlewares'
 
 export function createSlackApp() {
   const models = createModels()
@@ -16,11 +17,15 @@ export function createSlackApp() {
     receiver,
   })
 
-  // Register handlers
+  const middlewares = createMiddlewares(app, controllers.billing)
+
+  // Register app home and settings
   createAppHomeHandlers(app, controllers)
-  createAcronymHandlers(app, controllers)
-  createFaqHandlers(app, controllers)
-  createPageHandlers(app, controllers)
+
+  // Register paid features
+  createAcronymHandlers(app, middlewares, controllers)
+  createFaqHandlers(app, middlewares, controllers)
+  createPageHandlers(app, middlewares, controllers)
 
   return app
 }

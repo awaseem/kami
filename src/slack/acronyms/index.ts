@@ -6,6 +6,7 @@ import type {
 } from '@slack/bolt'
 import { StringIndexed } from '@slack/bolt/dist/types/helpers'
 import { Controllers } from '../../controllers'
+import { Middlewares } from '../../middlewares'
 import { handleSlackError } from '../../utils/error'
 import { logEventError } from '../../utils/logger'
 import { getFirstFoundAcronym, parseMessageBlocks } from '../../utils/messages'
@@ -31,7 +32,11 @@ const DEFINE_ACRONYM_SHORTCUT_GLOBAL = 'define_acronym_global'
 const CREATE_ACRONYM_SHORTCUT_MESSAGE = 'create_acronym_message_shortcut'
 const DEFINE_ACRONYM_SHORTCUT_MESSAGE = 'define_acronym_message_shortcut'
 
-export function createAcronymHandlers(app: App, controller: Controllers) {
+export function createAcronymHandlers(
+  app: App,
+  middlewares: Middlewares,
+  controller: Controllers,
+) {
   async function handleCreateAcronymShortcuts({
     ack,
     shortcut,
@@ -63,16 +68,25 @@ export function createAcronymHandlers(app: App, controller: Controllers) {
     }
   }
 
-  app.shortcut(CREATE_ACRONYM_SHORTCUT_GLOBAL, async (args) => {
-    await handleCreateAcronymShortcuts(args)
-  })
+  app.shortcut(
+    CREATE_ACRONYM_SHORTCUT_GLOBAL,
+    middlewares.billingMiddleware,
+    async (args) => {
+      await handleCreateAcronymShortcuts(args)
+    },
+  )
 
-  app.shortcut(CREATE_ACRONYM_SHORTCUT_MESSAGE, async (args) => {
-    await handleCreateAcronymShortcuts(args)
-  })
+  app.shortcut(
+    CREATE_ACRONYM_SHORTCUT_MESSAGE,
+    middlewares.billingMiddleware,
+    async (args) => {
+      await handleCreateAcronymShortcuts(args)
+    },
+  )
 
   app.shortcut(
     DEFINE_ACRONYM_SHORTCUT_GLOBAL,
+    middlewares.billingMiddleware,
     async ({ ack, shortcut, client }) => {
       try {
         await ack()
@@ -87,6 +101,7 @@ export function createAcronymHandlers(app: App, controller: Controllers) {
 
   app.shortcut(
     DEFINE_ACRONYM_SHORTCUT_MESSAGE,
+    middlewares.billingMiddleware,
     async ({ ack, shortcut, client, context }) => {
       const userId = shortcut.user.id
 
@@ -125,6 +140,7 @@ export function createAcronymHandlers(app: App, controller: Controllers) {
 
   app.view(
     DEFINE_ACRONYM_CALLBACK_ID,
+    middlewares.billingMiddleware,
     async ({ ack, context, view, body, client }) => {
       try {
         const teamId = context.teamId
@@ -174,6 +190,7 @@ export function createAcronymHandlers(app: App, controller: Controllers) {
 
   app.view(
     CREATE_ACRONYM_CALLBACK_ID,
+    middlewares.billingMiddleware,
     async ({ ack, context, view, body, client }) => {
       try {
         await ack()

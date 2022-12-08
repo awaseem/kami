@@ -67,6 +67,22 @@ export class OpenAPIError extends Error {
   }
 }
 
+export class BillingError extends Error {
+  constructor(error: Error) {
+    super(`[BILLING]: ${error.message}`)
+    // Set the prototype explicitly.
+    Object.setPrototypeOf(this, BillingError.prototype)
+  }
+
+  async postMessage(client: WebClient, userId: string) {
+    await client.chat.postMessage({
+      channel: userId,
+      mrkdwn: true,
+      text: `🚨 Please configure billing for Kami within the app home before running any commands.`,
+    })
+  }
+}
+
 export async function handleSlackError(
   error: Error,
   userId: string,
@@ -77,7 +93,8 @@ export async function handleSlackError(
       error instanceof NotionError ||
       error instanceof ControllerError ||
       error instanceof UserViewError ||
-      error instanceof OpenAPIError
+      error instanceof OpenAPIError ||
+      error instanceof BillingError
     ) {
       await error.postMessage(client, userId)
       return

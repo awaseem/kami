@@ -11,6 +11,17 @@ export interface BillingConfig {
 }
 
 export function createBillingController(billingModel: BillingModel) {
+  async function isValidBilling(teamId: string) {
+    const subscriptions = await billingModel.getBillingSubscription(teamId)
+    if (!subscriptions) {
+      return false
+    }
+
+    return (
+      subscriptions.status === 'active' || subscriptions.status === 'trialing'
+    )
+  }
+
   async function configureBilling(teamId: string) {
     const homeDeepLink = getAppHomeDeepLink(teamId)
 
@@ -83,5 +94,6 @@ export function createBillingController(billingModel: BillingModel) {
   return Object.freeze({
     configureBilling,
     handleStripeEvents,
+    isValidBilling,
   })
 }

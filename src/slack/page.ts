@@ -1,5 +1,6 @@
 import { App } from '@slack/bolt'
 import { Controllers } from '../controllers'
+import { Middlewares } from '../middlewares'
 import { handleSlackError, UserViewError } from '../utils/error'
 import {
   createPageWithPromptView,
@@ -11,9 +12,14 @@ import {
 const CREATE_PAGE_PROMPT_GLOBAL_CALLBACK_ID = 'create_page_prompt_global'
 const CREATE_SUMMARY_PAGE_MESSAGE_CALLBACK_ID = 'create_summary_page_message'
 
-export function createPageHandlers(app: App, controller: Controllers) {
+export function createPageHandlers(
+  app: App,
+  middlewares: Middlewares,
+  controller: Controllers,
+) {
   app.shortcut(
     CREATE_SUMMARY_PAGE_MESSAGE_CALLBACK_ID,
+    middlewares.billingMiddleware,
     async ({ ack, client, shortcut, context }) => {
       const userId = shortcut.user.id
 
@@ -74,6 +80,7 @@ export function createPageHandlers(app: App, controller: Controllers) {
 
   app.shortcut(
     CREATE_PAGE_PROMPT_GLOBAL_CALLBACK_ID,
+    middlewares.billingMiddleware,
     async ({ ack, client, shortcut }) => {
       try {
         await ack()
@@ -89,6 +96,7 @@ export function createPageHandlers(app: App, controller: Controllers) {
 
   app.view(
     CREATE_PAGE_PROMPT_CALLBACK_ID,
+    middlewares.billingMiddleware,
     async ({ ack, context, view, body, client }) => {
       try {
         await ack()
