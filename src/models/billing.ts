@@ -1,12 +1,15 @@
 import type Stripe from 'stripe'
 import stripe from '../lib/stripe'
+import { getTimestampSeconds } from '../utils/date'
 import { ENV_hostname, ENV_stripePricing } from '../utils/env'
+import { uuid } from '../utils/ids'
 import { createRedisStore } from './store'
 
 export type BillingModel = ReturnType<typeof createBillingModel>
 
 export interface BillingSubscriptionObj {
   subscriptionId: string
+  subscriptionItemId: string
   customerId: string
   status: Stripe.Subscription.Status
 }
@@ -75,6 +78,30 @@ async function removeBillingSubscription(teamId: string) {
   await billingStore.remove(teamId)
 }
 
+async function createUsageRecord(subscriptionItemId: string, usage: number) {
+  const timestamp = getTimestampSeconds()
+  const idempotencyKey = uuid()
+
+  try {
+    await stripe.subscriptionItems.createUsageRecord(
+      subscriptionItemId,
+      {
+        quantity: usage,
+        timestamp: timestamp,
+        action: 'set',
+      },
+      {
+        idempotencyKey,
+      },
+    )
+  } catch (error) {
+    const errorMessage = (error as Error).message
+    console.error(
+      `Usage report failed for item ID ${subscriptionItemId} with idempotency key ${idempotencyKey}: ${errorMessage}`,
+    )
+  }
+}
+
 function getStripeEvent(data: any, sig: string, endpointSecret: string) {
   return stripe.webhooks.constructEvent(data, sig, endpointSecret)
 }
@@ -87,5 +114,6 @@ export function createBillingModel() {
     setBillingSubscription,
     getBillingSubscription,
     removeBillingSubscription,
+    createUsageRecord,
   })
 }

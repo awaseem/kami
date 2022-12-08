@@ -63,11 +63,13 @@ export function createBillingController(billingModel: BillingModel) {
       const customerId = subscription.customer as string
       const status = subscription.status
       const subscriptionId = subscription.id
+      const subscriptionItemId = subscription.items.data?.[0].id
 
       await billingModel.setBillingSubscription(teamId, {
         customerId,
         status,
         subscriptionId,
+        subscriptionItemId,
       })
       return
     }
