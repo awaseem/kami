@@ -52,6 +52,17 @@ export function createBillingController(billingModel: BillingModel) {
     }
   }
 
+  async function addAiUsage(teamId: string) {
+    const subscription = await billingModel.getBillingSubscription(teamId)
+    if (!subscription) {
+      throw new ControllerError(
+        `Failed to find subscription for team ${teamId}`,
+      )
+    }
+
+    await billingModel.createUsageRecord(subscription.subscriptionItemId, 1)
+  }
+
   async function handleStripeEvents(
     data: any,
     sig: string,
@@ -95,5 +106,6 @@ export function createBillingController(billingModel: BillingModel) {
     configureBilling,
     handleStripeEvents,
     isValidBilling,
+    addAiUsage,
   })
 }

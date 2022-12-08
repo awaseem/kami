@@ -58,6 +58,8 @@ export function createPageHandlers(
           messages,
         )
 
+        await controller.billing.addAiUsage(teamId)
+
         const { permalink } = await client.chat.getPermalink({
           channel: channelId,
           message_ts: messageTs,
@@ -117,6 +119,8 @@ export function createPageHandlers(
         }
 
         const page = await controller.page.createPageFromPrompt(teamId, prompt)
+
+        await controller.billing.addAiUsage(teamId)
 
         await client.chat.postMessage({
           channel: userId,
