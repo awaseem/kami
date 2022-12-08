@@ -4,17 +4,12 @@ import { BillingError, handleSlackError } from '../utils/error'
 
 export type Middlewares = ReturnType<typeof createMiddlewares>
 
-export function createMiddlewares(
-  app: App,
-  billingController: BillingController,
-) {
+export function createMiddlewares(billingController: BillingController) {
   async function billingMiddleware({ body, client, context, next, ack }: any) {
     const userId = body?.user?.id as string | undefined
     if (!userId) {
       return
     }
-
-    console.log(body)
 
     try {
       const teamId = context.teamId

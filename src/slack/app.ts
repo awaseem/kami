@@ -11,13 +11,12 @@ import { createMiddlewares } from '../middlewares'
 export function createSlackApp() {
   const models = createModels()
   const controllers = createControllers(models)
+  const middlewares = createMiddlewares(controllers.billing)
 
   const receiver = createRouter(models, controllers)
   const app = new App({
     receiver,
   })
-
-  const middlewares = createMiddlewares(app, controllers.billing)
 
   // Register app home and settings
   createAppHomeHandlers(app, controllers)
