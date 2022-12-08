@@ -34,7 +34,7 @@ export async function createPageWithPromptView(
           type: 'section',
           text: {
             type: 'plain_text',
-            text: `Create a new page with AI generated content based on your prompt. For example you can try:\n"Brainstorm some ideas combining VR and fitness"\n"Create a new process for managing bugs in our products"`,
+            text: `Create a new page with AI generated content based on your prompt. For example you can try:\n\n"Brainstorm some ideas combining VR and fitness"\n\n"Create a new process for managing bugs in our products"`,
             emoji: true,
           },
         },
