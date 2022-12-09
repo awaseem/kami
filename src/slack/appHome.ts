@@ -1,8 +1,8 @@
 import type { App } from '@slack/bolt'
-import { Controllers } from '../../controllers'
-import { handleSlackError } from '../../utils/error'
-import { logEventError } from '../../utils/logger'
-import { getPageIdFromNotionUrl } from '../../utils/notion'
+import { Controllers } from '../controllers'
+import { handleSlackError } from '../utils/error'
+import { logEventError } from '../utils/logger'
+import { getPageIdFromNotionUrl } from '../utils/notion'
 import {
   BILLING_BUTTON_CLICKED,
   createAppHome,
@@ -13,8 +13,8 @@ import {
   SETUP_PAGE_CALLBACK_ID,
   SETUP_PAGE_URL_INPUT,
   SETUP_PAGE_URL_INPUT_ACTION,
-} from '../views/appHome'
-import { ErrorModel } from '../views/error'
+} from './views/appHome'
+import { ErrorModel } from './views/error'
 
 const APP_HOME_OPEN_EVENT = 'app_home_opened'
 

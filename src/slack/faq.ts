@@ -1,8 +1,8 @@
 import { App } from '@slack/bolt'
-import { Controllers } from '../../controllers'
-import { Middlewares } from '../../middlewares'
-import { handleSlackError, UserViewError } from '../../utils/error'
-import { saySilent, sayToThread } from '../../utils/slack'
+import { Controllers } from '../controllers'
+import { Middlewares } from '../middlewares'
+import { handleSlackError, UserViewError } from '../utils/error'
+import { saySilent, sayToThread } from '../utils/slack'
 
 const QUESTION_REGEX = /[A-Za-z\s]*\?/
 

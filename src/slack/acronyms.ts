@@ -5,12 +5,12 @@ import type {
   SlackShortcutMiddlewareArgs,
 } from '@slack/bolt'
 import { StringIndexed } from '@slack/bolt/dist/types/helpers'
-import { Controllers } from '../../controllers'
-import { Middlewares } from '../../middlewares'
-import { handleSlackError } from '../../utils/error'
-import { logEventError } from '../../utils/logger'
-import { getFirstFoundAcronym, parseMessageBlocks } from '../../utils/messages'
-import { saySilent, sendDirectMessage } from '../../utils/slack'
+import { Controllers } from '../controllers'
+import { Middlewares } from '../middlewares'
+import { handleSlackError } from '../utils/error'
+import { logEventError } from '../utils/logger'
+import { getFirstFoundAcronym, parseMessageBlocks } from '../utils/messages'
+import { saySilent, sendDirectMessage } from '../utils/slack'
 import {
   createAcronymModal,
   CREATE_ACRONYM_CALLBACK_ID,
@@ -22,7 +22,7 @@ import {
   DEFINE_ACRONYM_CALLBACK_ID,
   DEFINE_ACRONYM_INPUT_LABEL,
   DEFINE_ACRONYM_INPUT_LABEL_ACTION,
-} from '../views/acronyms'
+} from './views/acronyms'
 
 type SlackShortcutArg = SlackShortcutMiddlewareArgs<SlackShortcut> &
   AllMiddlewareArgs<StringIndexed>
