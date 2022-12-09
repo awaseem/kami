@@ -24,10 +24,11 @@ export function createPageControllers(models: Models) {
       )
     }
 
-    const response = await models.page.createPageWithContent({
+    const response = await models.page.createPromptPage({
       accessToken,
       parentId,
       content,
+      prompt,
       heading: prompt,
     })
     if (!isFullPage(response)) {
@@ -42,6 +43,7 @@ export function createPageControllers(models: Models) {
   async function createSummaryPageFromMessages(
     teamId: string,
     replies: SlackReply[],
+    threadUrl: string,
   ) {
     const accessToken = await models.accessTokens.notion.getAccessToken(teamId)
     if (!accessToken) {
@@ -69,10 +71,11 @@ export function createPageControllers(models: Models) {
       )
     }
 
-    const response = await models.page.createPageWithContent({
+    const response = await models.page.createSummaryFromThread({
       accessToken,
       parentId,
       content: summary,
+      threadLink: threadUrl,
       heading: `Summary for ${cleanReplies[0]}`,
     })
     if (!isFullPage(response)) {

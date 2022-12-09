@@ -53,17 +53,18 @@ export function createPageHandlers(
           )
         }
 
-        const page = await controller.page.createSummaryPageFromMessages(
-          teamId,
-          messages,
-        )
-
-        await controller.billing.addAiUsage(teamId)
-
         const { permalink } = await client.chat.getPermalink({
           channel: channelId,
           message_ts: messageTs,
         })
+
+        const page = await controller.page.createSummaryPageFromMessages(
+          teamId,
+          messages,
+          permalink ?? 'Unable to get link',
+        )
+
+        await controller.billing.addAiUsage(teamId)
 
         await client.chat.postMessage({
           channel: userId,
