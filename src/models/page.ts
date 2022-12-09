@@ -54,7 +54,7 @@ async function createPromptPage({
               {
                 text: {
                   content:
-                    'Open AI has generated the following page based on this prompt:',
+                    'Feel free to move this page. Open AI has generated the following page based on this prompt:',
                 },
                 annotations: {
                   bold: true,
@@ -132,7 +132,7 @@ async function createSummaryFromThread({
               {
                 text: {
                   content:
-                    'Open AI has generated the following summary based on this ',
+                    'Feel free to move this page. Open AI has generated the following summary based on this ',
                 },
                 annotations: {
                   bold: true,
