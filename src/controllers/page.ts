@@ -130,10 +130,15 @@ export function createPageControllers(models: Models) {
     }
   }
 
+  async function getRootPageId(teamId: string) {
+    return models.notion.getRootPage(teamId)
+  }
+
   return Object.freeze({
     doesPageExist,
     createPageFromPrompt,
     createRootAndPages,
     createSummaryPageFromMessages,
+    getRootPageId,
   })
 }

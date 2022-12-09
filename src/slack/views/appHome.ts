@@ -1,5 +1,6 @@
 import type { WebClient } from '@slack/web-api'
 import type { BillingConfig } from '../../controllers/billing'
+import { getNotionPageUrl } from '../../utils/links'
 
 export const NOTION_AUTH_BUTTON_CLICKED = 'notion_auth_button_clicked'
 export const NOTION_SETUP_PAGE_ID_BUTTON_CLICKED = 'notion_setup_page_id_button'
@@ -114,7 +115,11 @@ export const SETUP_PAGE_CALLBACK_ID = 'setup_page_callback_id'
 export const SETUP_PAGE_URL_INPUT = 'setup_page_url_input'
 export const SETUP_PAGE_URL_INPUT_ACTION = 'setup_page_url_input_action'
 
-export function createSetupPageModel(client: WebClient, triggerId: string) {
+export function createSetupPageModel(
+  client: WebClient,
+  triggerId: string,
+  rootPageId?: string,
+) {
   return client.views.open({
     trigger_id: triggerId,
     view: {
@@ -139,9 +144,10 @@ export function createSetupPageModel(client: WebClient, triggerId: string) {
         {
           type: 'section',
           text: {
-            type: 'plain_text',
-            text: 'Paste a valid notion url from your workspace',
-            emoji: true,
+            type: 'mrkdwn',
+            text: `Paste a valid notion url from your workspace, we will generate all pages under thats space.\n\n*Current root page url:* <${
+              rootPageId ? getNotionPageUrl(rootPageId) : 'N/A'
+            }>`,
           },
         },
         {
@@ -154,7 +160,6 @@ export function createSetupPageModel(client: WebClient, triggerId: string) {
           label: {
             type: 'plain_text',
             text: 'Notion page URL',
-            emoji: true,
           },
         },
       ],

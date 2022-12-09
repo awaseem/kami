@@ -76,7 +76,8 @@ export function createAppHomeHandlers(app: App, controllers: Controllers) {
           return
         }
 
-        await createSetupPageModel(client, triggerId)
+        const rootPageId = await controllers.page.getRootPageId(teamId)
+        await createSetupPageModel(client, triggerId, rootPageId)
       } catch (error) {
         logEventError(NOTION_SETUP_PAGE_ID_BUTTON_CLICKED, error as Error)
       }
