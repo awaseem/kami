@@ -17,8 +17,17 @@ import {
 import { ErrorModel } from './views/error'
 
 const APP_HOME_OPEN_EVENT = 'app_home_opened'
+const APP_UNINSTALLED = 'app_uninstalled'
 
 export function createAppHomeHandlers(app: App, controllers: Controllers) {
+  app.event(APP_UNINSTALLED, async ({ context }) => {
+    const teamId = context.teamId
+
+    if (teamId) {
+      await controllers.auth.removeAllAppData(teamId)
+    }
+  })
+
   app.event(APP_HOME_OPEN_EVENT, async ({ context, client, event }) => {
     try {
       const teamId = context.teamId

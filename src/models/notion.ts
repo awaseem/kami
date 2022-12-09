@@ -12,8 +12,8 @@ import { createRedisStore } from './store'
 const NOTION_AUTH_EXCHANGE_ROUTE = 'https://api.notion.com/v1/oauth/token'
 
 const notionRootPageRedisStore = createRedisStore('notion|root|page')
-const notionAcronymStore = createRedisStore('notion|acronym|page')
-const notionFaqStore = createRedisStore('notion|faq|page')
+const notionAcronymRedisStore = createRedisStore('notion|acronym|page')
+const notionFaqRedisStore = createRedisStore('notion|faq|page')
 
 async function oauthExchange(code: string) {
   const body = {
@@ -64,19 +64,19 @@ async function saveRootPage(teamId: string, pageId: string) {
 }
 
 async function getAcronymPageId(teamId: string) {
-  return notionAcronymStore.get(teamId)
+  return notionAcronymRedisStore.get(teamId)
 }
 
 async function setAcronymPageId(teamId: string, pageId: string) {
-  await notionAcronymStore.set(teamId, pageId)
+  await notionAcronymRedisStore.set(teamId, pageId)
 }
 
 async function getFaqPageId(teamId: string) {
-  return notionFaqStore.get(teamId)
+  return notionFaqRedisStore.get(teamId)
 }
 
 async function setFaqPageId(teamId: string, pageId: string) {
-  await notionFaqStore.set(teamId, pageId)
+  await notionFaqRedisStore.set(teamId, pageId)
 }
 
 async function createRootPage(accessToken: string, parentId: string) {
@@ -162,6 +162,14 @@ async function createRootPage(accessToken: string, parentId: string) {
   }
 }
 
+async function removeAllPages(teamId: string) {
+  await Promise.all([
+    notionAcronymRedisStore.remove(teamId),
+    notionFaqRedisStore.remove(teamId),
+    notionRootPageRedisStore.remove(teamId),
+  ])
+}
+
 export function createNotionModels() {
   return {
     oauthExchange,
@@ -174,6 +182,7 @@ export function createNotionModels() {
     getFaqPageId,
     setFaqPageId,
     createRootPage,
+    removeAllPages,
   }
 }
 

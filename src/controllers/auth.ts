@@ -12,6 +12,13 @@ export function createAuthController(
     return notionModel.getNotionOauthUrl(teamId)
   }
 
+  async function removeAllAppData(teamId: string) {
+    await Promise.all([
+      notionModel.removeAllPages(teamId),
+      accessTokenModel.notion.removeAccessTokens(teamId),
+    ])
+  }
+
   async function hasNotionAccessToken(teamId: string) {
     const accessToken = await accessTokenModel.notion.getAccessToken(teamId)
     return Boolean(accessToken)
@@ -67,5 +74,6 @@ export function createAuthController(
     storeInstall,
     getInstall,
     deleteInstall,
+    removeAllAppData,
   })
 }

@@ -10,11 +10,16 @@ async function setAccessToken(teamId: string, accessToken: string) {
   await notionAccessTokenStore.set(teamId, accessToken)
 }
 
+async function removeAccessTokens(teamId: string) {
+  await notionAccessTokenStore.remove(teamId)
+}
+
 export function createAccessTokensModel() {
   return Object.freeze({
     notion: {
       setAccessToken,
       getAccessToken,
+      removeAccessTokens,
     },
   })
 }
