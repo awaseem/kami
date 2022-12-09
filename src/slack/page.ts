@@ -2,6 +2,7 @@ import { App } from '@slack/bolt'
 import { Controllers } from '../controllers'
 import { Middlewares } from '../middlewares'
 import { handleSlackError, UserViewError } from '../utils/error'
+import { sendDirectMessage } from '../utils/slack'
 import {
   createPageWithPromptView,
   CREATE_PAGE_PROMPT_CALLBACK_ID,
@@ -66,15 +67,13 @@ export function createPageHandlers(
 
         await controller.billing.addAiUsage(teamId)
 
-        await client.chat.postMessage({
-          channel: userId,
-          mrkdwn: true,
-          text: `Hello 👋. ${
-            permalink
-              ? `We finished creating a summary for the following <${permalink}|thread>`
-              : 'We finished processing a summary for a thread'
-          }. We created the following <${page.url}|Notion Page>.`,
-        })
+        const message = `Hello 👋. ${
+          permalink
+            ? `We finished creating a summary for the following <${permalink}|thread>`
+            : 'We finished processing a summary for a thread'
+        }. We created the following <${page.url}|Notion Page>.`
+
+        await sendDirectMessage(client, userId, message)
       } catch (error) {
         handleSlackError(error as Error, userId, client)
       }
@@ -123,11 +122,11 @@ export function createPageHandlers(
 
         await controller.billing.addAiUsage(teamId)
 
-        await client.chat.postMessage({
-          channel: userId,
-          mrkdwn: true,
-          text: `Hello 👋. For the following prompt: ${prompt}. We created the following <${page.url}|Notion Page>.`,
-        })
+        await sendDirectMessage(
+          client,
+          userId,
+          `Hello 👋. For the following prompt: ${prompt}. We created the following <${page.url}|Notion Page>.`,
+        )
       } catch (error) {
         handleSlackError(error as Error, body.user.id, client)
       }

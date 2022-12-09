@@ -43,6 +43,7 @@ export async function createPageWithPromptView(
           block_id: CREATE_PAGE_PROMPT_INPUT_LABEL,
           element: {
             type: 'plain_text_input',
+            multiline: true,
             action_id: CREATE_PAGE_PROMPT_INPUT_LABEL_ACTION,
           },
           label: {

@@ -10,7 +10,7 @@ import { Middlewares } from '../../middlewares'
 import { handleSlackError } from '../../utils/error'
 import { logEventError } from '../../utils/logger'
 import { getFirstFoundAcronym, parseMessageBlocks } from '../../utils/messages'
-import { saySilent } from '../../utils/slack'
+import { saySilent, sendDirectMessage } from '../../utils/slack'
 import {
   createAcronymModal,
   CREATE_ACRONYM_CALLBACK_ID,
@@ -143,7 +143,10 @@ export function createAcronymHandlers(
     middlewares.billingMiddleware,
     async ({ ack, context, view, body, client }) => {
       try {
+        await ack()
+
         const teamId = context.teamId
+        const userId = body.user.id
 
         if (!teamId) {
           throw new Error('invalid team id.')
@@ -163,25 +166,8 @@ export function createAcronymHandlers(
           username: body.user.name,
         })
 
-        await ack({
-          response_action: 'update',
-          view: {
-            type: 'modal',
-            title: {
-              type: 'plain_text',
-              text: 'Voila!',
-            },
-            blocks: [
-              {
-                type: 'section',
-                text: {
-                  type: 'mrkdwn',
-                  text: definition ?? `Sorry I couldn't find anything 😞`,
-                },
-              },
-            ],
-          },
-        })
+        const message = definition ?? `Sorry I couldn't find anything 😞`
+        await sendDirectMessage(client, userId, message)
       } catch (error) {
         handleSlackError(error as Error, body.user.id, client)
       }

@@ -39,3 +39,15 @@ export async function sayToThread(
     thread_ts: threadTs,
   })
 }
+
+export async function sendDirectMessage(
+  client: WebClient,
+  userId: string,
+  mrkdwn: string,
+) {
+  await client.chat.postMessage({
+    channel: userId,
+    mrkdwn: true,
+    text: mrkdwn,
+  })
+}
