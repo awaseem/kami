@@ -29,7 +29,7 @@ export function createPageControllers(models: Models) {
       parentId,
       content,
       prompt,
-      heading: prompt,
+      heading: `[prompt]: ${prompt}`,
     })
     if (!isFullPage(response)) {
       throw new ControllerError(
@@ -76,7 +76,7 @@ export function createPageControllers(models: Models) {
       parentId,
       content: summary,
       threadLink: threadUrl,
-      heading: `Summary for ${cleanReplies[0]}`,
+      heading: `[Summary]: ${cleanReplies[0]}`,
     })
     if (!isFullPage(response)) {
       throw new ControllerError(
