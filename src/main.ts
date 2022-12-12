@@ -9,7 +9,7 @@ async function main() {
   const app = createSlackApp()
 
   await app.start(port)
-  console.log(`⚡️ Bolt app is running on port: ${port}`)
+  console.log(`🔮 Kami is running on port: ${port}`)
 }
 
 main()
