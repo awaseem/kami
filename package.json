@@ -30,7 +30,6 @@
     "watch": "nodemon build/src/main.js",
     "dev": "concurrently \"npm run build:watch\" \"npm run watch\"",
     "clean": "rimraf coverage build tmp",
-    "prebuild": "npm run lint",
     "build": "tsc -p tsconfig.json",
     "build:watch": "tsc -w -p tsconfig.json",
     "build:release": "npm run clean && tsc -p tsconfig.release.json",

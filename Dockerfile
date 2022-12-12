@@ -8,7 +8,7 @@ WORKDIR /usr/src/app
 
 COPY --chown=node:node . .
 
-RUN npm ci --only=production
+RUN npm ci --include=dev
 
 RUN npm run build 
 
