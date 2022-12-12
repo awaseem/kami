@@ -14,4 +14,4 @@ RUN npm run build
 
 USER node
 
-CMD ["dumb-init", "node", "build/main.js"]
+CMD ["dumb-init", "node", "build/src/main.js"]
