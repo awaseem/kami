@@ -1,7 +1,7 @@
 {
-  "name": "node-typescript-boilerplate",
+  "name": "kami",
   "version": "0.0.0",
-  "description": "Minimalistic boilerplate to quick-start Node.js development in TypeScript.",
+  "description": "helping you move information out of slack into notion.",
   "engines": {
     "node": ">= 16.13 <17"
   },
@@ -38,8 +38,8 @@
     "prettier": "prettier --config .prettierrc --write .",
     "test:watch": "NODE_ENV=test jest --watch"
   },
-  "author": "Jakub Synowiec <jsynowiec@users.noreply.github.com>",
-  "license": "Apache-2.0",
+  "author": "Ali Waseem <github@aliwaseem.com>",
+  "license": "MIT",
   "dependencies": {
     "@notionhq/client": "^2.2.2",
     "@slack/bolt": "^3.12.2",
