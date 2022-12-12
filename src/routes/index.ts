@@ -19,6 +19,10 @@ export function createRouter(models: Models, controllers: Controllers) {
     stateSecret: ENV_slackStateSecret,
     scopes: SLACK_SCOPES,
 
+    installerOptions: {
+      directInstall: true,
+    },
+
     installationStore: {
       storeInstallation: async (installation) => {
         return await controllers.auth.storeInstall(installation)
