@@ -10,6 +10,8 @@ COPY --chown=node:node . .
 
 RUN npm ci --only=production
 
+RUN npm run build 
+
 USER node
 
-CMD ["dumb-init", "node", "server.js"]
+CMD ["dumb-init", "node", "build/main.js"]

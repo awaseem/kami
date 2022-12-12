@@ -1,0 +1,60 @@
+display_information:
+  name: Kami
+features:
+  app_home:
+    home_tab_enabled: true
+    messages_tab_enabled: true
+    messages_tab_read_only_enabled: true
+  bot_user:
+    display_name: Kami
+    always_online: true
+  shortcuts:
+    - name: Create new acronym
+      type: global
+      callback_id: define_acronym
+      description: Create a new acronym
+    - name: Search acronym
+      type: message
+      callback_id: define_acronym_message_shortcut
+      description: Search any acroynms in this message
+    - name: Create new acronym
+      type: message
+      callback_id: create_acronym_message_shortcut
+      description: Detect and create a new acronym from the message
+    - name: Search acronym
+      type: global
+      callback_id: define_acronym_global
+      description: Search a acronym based on an input
+    - name: Search similar FAQs
+      type: message
+      callback_id: search_faq_shortcut_message
+      description: Search similar FAQs from this message
+oauth_config:
+  redirect_urls:
+    - https://prod-kami.onrender.com/slack/oauth_redirect
+  scopes:
+    bot:
+      - chat:write
+      - channels:history
+      - groups:history
+      - im:history
+      - mpim:history
+      - commands
+      - reactions:read
+settings:
+  event_subscriptions:
+    request_url: https://prod-kami.onrender.com/slack/events
+    bot_events:
+      - app_home_opened
+      - app_uninstalled
+      - message.channels
+      - message.groups
+      - message.im
+      - message.mpim
+      - reaction_added
+  interactivity:
+    is_enabled: true
+    request_url: https://prod-kami.onrender.com/slack/events
+  org_deploy_enabled: false
+  socket_mode_enabled: false
+  token_rotation_enabled: true
