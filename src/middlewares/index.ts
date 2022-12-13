@@ -5,8 +5,16 @@ import { BillingError, handleSlackError } from '../utils/error'
 export type Middlewares = ReturnType<typeof createMiddlewares>
 
 export function createMiddlewares(billingController: BillingController) {
-  async function billingMiddleware({ body, client, context, next, ack }: any) {
-    const userId = body?.user?.id as string | undefined
+  async function billingMiddleware({
+    body,
+    client,
+    context,
+    next,
+    ack,
+    message,
+  }: any) {
+    // This middleware responds to all events, so we need to find user IDs in any event
+    const userId = (body?.user?.id ?? message?.user) as string | undefined
     if (!userId) {
       return
     }
