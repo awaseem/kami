@@ -47,6 +47,7 @@ export function createAcronymControllers(models: Models) {
       databaseId,
       [acronym],
     )
+
     const foundAcronyms = databaseResponseToAcronyms(foundAcronymResponse)
     if (foundAcronyms.length !== 0) {
       const foundAcronymsMessage = foundAcronymMessage(foundAcronyms)
