@@ -12,6 +12,14 @@ export function getEnvOrExit(key: string) {
   return env
 }
 
+export function getEnv<T>(key: string) {
+  if (process.env.NODE_ENV == 'test') {
+    return ''
+  }
+
+  return process.env[key]
+}
+
 export const ENV_slackClientId = getEnvOrExit('SLACK_CLIENT_ID')
 export const ENV_slackClintSecret = getEnvOrExit('SLACK_CLIENT_SECRET')
 export const ENV_slackSigningSecret = getEnvOrExit('SLACK_SIGNING_SECRET')
@@ -28,6 +36,8 @@ export const ENV_redisUrl = getEnvOrExit('REDIS_URL')
 export const ENV_redisToken = getEnvOrExit('REDIS_TOKEN')
 
 export const ENV_openApiKey = getEnvOrExit('OPEN_AI_API_KEY')
+
+export const ENV_disableStripeBilling = getEnv('DISABLE_STRIPE_BILLING')
 
 export const ENV_stripeKey = getEnvOrExit('STRIPE_TOKEN')
 export const ENV_stripePricing = getEnvOrExit('STRIPE_PRICING_ID')

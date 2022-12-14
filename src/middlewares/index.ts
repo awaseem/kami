@@ -1,5 +1,5 @@
-import type { App } from '@slack/bolt'
 import { BillingController } from '../controllers/billing'
+import { ENV_disableStripeBilling } from '../utils/env'
 import { BillingError, handleSlackError } from '../utils/error'
 
 export type Middlewares = ReturnType<typeof createMiddlewares>
@@ -13,9 +13,9 @@ export function createMiddlewares(billingController: BillingController) {
     ack,
     message,
   }: any) {
-    // This middleware responds to all events, so we need to find user IDs in any event
-    const userId = (body?.user?.id ?? message?.user) as string | undefined
-    if (!userId) {
+    // billing has been disabled, return to the next message
+    if (ENV_disableStripeBilling) {
+      await next()
       return
     }
 
@@ -32,6 +32,11 @@ export function createMiddlewares(billingController: BillingController) {
         throw new BillingError(error)
       }
     } catch (error) {
+      // This middleware responds to all events, so we need to find user IDs in any event
+      const userId = (body?.user?.id ?? message?.user) as string | undefined
+      if (!userId) {
+        return
+      }
       if (ack) {
         await ack()
       }
