@@ -1,5 +1,6 @@
 import type { WebClient } from '@slack/web-api'
 import type { BillingConfig } from '../../controllers/billing'
+import { ENV_disableStripeBilling } from '../../utils/env'
 import { getNotionPageUrl } from '../../utils/links'
 
 export const NOTION_AUTH_BUTTON_CLICKED = 'notion_auth_button_clicked'
@@ -93,18 +94,23 @@ export async function createAppHome(
           type: 'section',
           text: {
             type: 'mrkdwn',
-            text: 'Configure billing for Kami.',
+            text: ENV_disableStripeBilling
+              ? 'Billing has been disabled'
+              : 'Configure billing for Kami.',
           },
-          accessory: {
-            type: 'button',
-            text: {
-              type: 'plain_text',
-              text: 'Configure',
-              emoji: true,
+
+          ...(!ENV_disableStripeBilling && {
+            accessory: {
+              type: 'button',
+              text: {
+                type: 'plain_text',
+                text: 'Configure',
+                emoji: true,
+              },
+              value: 'click_billing',
+              action_id: BILLING_BUTTON_CLICKED,
             },
-            value: 'click_billing',
-            action_id: BILLING_BUTTON_CLICKED,
-          },
+          }),
         },
       ],
     },

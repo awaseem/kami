@@ -21,8 +21,6 @@ async function createSubscription(
   successUrl: string,
   cancelUrl: string,
 ) {
-  const hostName = ENV_hostname
-
   const metadata = {
     teamId,
   }
@@ -35,8 +33,8 @@ async function createSubscription(
         price: ENV_stripePricing,
       },
     ],
-    success_url: hostName + successUrl,
-    cancel_url: hostName + cancelUrl,
+    success_url: successUrl,
+    cancel_url: cancelUrl,
     metadata,
     subscription_data: {
       metadata,
