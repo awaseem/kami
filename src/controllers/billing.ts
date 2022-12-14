@@ -1,7 +1,7 @@
 import type Stripe from 'stripe'
 import { BillingModel, BillingSubscriptionObj } from '../models/billing'
 import { ControllerError } from '../utils/error'
-import { getAppHomeDeepLink } from '../utils/links'
+import { getAppLink } from '../utils/links'
 
 export type BillingController = ReturnType<typeof createBillingController>
 
@@ -24,7 +24,7 @@ export function createBillingController(billingModel: BillingModel) {
   }
 
   async function configureBilling(teamId: string) {
-    const homeDeepLink = getAppHomeDeepLink(teamId)
+    const homeDeepLink = getAppLink()
 
     const subscription = await billingModel.getBillingSubscription(teamId)
     if (subscription) {

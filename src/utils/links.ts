@@ -6,6 +6,10 @@ export function getAppHomeDeepLink(teamId: string, appId: string = slackAppId) {
   return `slack://app?team=${teamId}&id=${appId}`
 }
 
+export function getAppLink(appId: string = slackAppId) {
+  return `https://slack.com/app_redirect?app=${appId}`
+}
+
 export function getChannelLink(channelId: string) {
   return `https://slack.com/app_redirect?channel=${channelId}`
 }
