@@ -35,13 +35,13 @@ async function oauthExchange(code: string) {
   return data.access_token
 }
 
-function getNotionOauthUrl(teamId: string) {
+function getNotionOauthUrl(teamId: string, userId: string) {
   const baseUrl = ENV_notionAuthUrl
   const redirectUri = ENV_notionRedirectUrl
 
   return `${baseUrl}&redirect_uri=${encodeURIComponent(
     redirectUri,
-  )}&state=${teamId}`
+  )}&state=${teamId}-${userId}`
 }
 
 async function getNotionPage(accessToken: string, pageId: string) {

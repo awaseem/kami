@@ -35,7 +35,11 @@ export function createAppHomeHandlers(app: App, controllers: Controllers) {
         throw new Error('failed to find team id when create app home')
       }
 
-      const notionConnectUrl = controllers.auth.getNotionSetupUrl(teamId)
+      const userId = event.user
+      const notionConnectUrl = controllers.auth.getNotionSetupUrl(
+        teamId,
+        userId,
+      )
       await createAppHome(client, event.user, notionConnectUrl)
     } catch (error) {
       logEventError(APP_HOME_OPEN_EVENT, error as Error)

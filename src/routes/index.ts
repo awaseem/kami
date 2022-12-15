@@ -8,9 +8,6 @@ import {
   ENV_slackStateSecret,
 } from '../utils/env'
 import { SLACK_SCOPES } from '../utils/slack'
-import { createBillingRoute } from './billing'
-import { createNotionAuthRoute } from './notion/auth'
-import { createSystemRouter } from './system'
 
 export function createRouter(models: Models, controllers: Controllers) {
   const receiver = new ExpressReceiver({
@@ -36,11 +33,6 @@ export function createRouter(models: Models, controllers: Controllers) {
       },
     },
   })
-
-  // Register routes
-  createSystemRouter(receiver)
-  createNotionAuthRoute(receiver, models)
-  createBillingRoute(receiver, controllers.billing)
 
   return receiver
 }

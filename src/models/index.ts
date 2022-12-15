@@ -1,3 +1,4 @@
+import { App } from '@slack/bolt'
 import { createAccessTokensModel } from './accessTokens'
 import { createAcronymModel } from './acronyms'
 import { createAiModel } from './ai'

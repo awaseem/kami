@@ -8,8 +8,8 @@ export function createAuthController(
   accessTokenModel: AccessTokenModel,
   slackModel: SlackModel,
 ) {
-  function getNotionSetupUrl(teamId: string) {
-    return notionModel.getNotionOauthUrl(teamId)
+  function getNotionSetupUrl(teamId: string, userId: string) {
+    return notionModel.getNotionOauthUrl(teamId, userId)
   }
 
   async function removeAllAppData(teamId: string) {
