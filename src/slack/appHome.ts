@@ -40,7 +40,10 @@ export function createAppHomeHandlers(app: App, controllers: Controllers) {
         teamId,
         userId,
       )
-      await createAppHome(client, event.user, notionConnectUrl)
+
+      const systemStatus = await controllers.system.getSystemStatus(teamId)
+
+      await createAppHome({ client, userId, notionConnectUrl, systemStatus })
     } catch (error) {
       logEventError(APP_HOME_OPEN_EVENT, error as Error)
     }
@@ -50,27 +53,24 @@ export function createAppHomeHandlers(app: App, controllers: Controllers) {
     await ack()
   })
 
-  app.action(
-    BILLING_BUTTON_CLICKED,
-    async ({ ack, context, body, client, action }) => {
-      await ack()
+  app.action(BILLING_BUTTON_CLICKED, async ({ ack, context, body, client }) => {
+    await ack()
 
-      const teamId = context.teamId
-      const triggerId =
-        body.type === 'block_actions' ? body.trigger_id : undefined
+    const teamId = context.teamId
+    const triggerId =
+      body.type === 'block_actions' ? body.trigger_id : undefined
 
-      if (!triggerId || !teamId) {
-        throw new Error('no valid trigger id or team id found.')
-      }
+    if (!triggerId || !teamId) {
+      throw new Error('no valid trigger id or team id found.')
+    }
 
-      const userId = body.user.id
-      const billingConfig = await controllers.billing.configureBilling(
-        teamId,
-        userId,
-      )
-      await createBillingViewModel(client, triggerId, billingConfig)
-    },
-  )
+    const userId = body.user.id
+    const billingConfig = await controllers.billing.configureBilling(
+      teamId,
+      userId,
+    )
+    await createBillingViewModel(client, triggerId, billingConfig)
+  })
 
   app.action(
     NOTION_SETUP_PAGE_ID_BUTTON_CLICKED,

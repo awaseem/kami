@@ -4,6 +4,7 @@ import { createAuthController } from './auth'
 import { createBillingController } from './billing'
 import { createFaqControllers } from './faq'
 import { createPageControllers } from './page'
+import { createSystemController } from './system'
 
 export type Controllers = ReturnType<typeof createControllers>
 
@@ -18,5 +19,6 @@ export function createControllers(models: Models) {
       models.slack,
     ),
     billing: createBillingController(models.billing),
+    system: createSystemController(models),
   })
 }

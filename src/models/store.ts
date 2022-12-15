@@ -66,5 +66,6 @@ export function createRedisStore(namespace: string) {
     getObj,
     set,
     setObj,
+    genKey,
   })
 }

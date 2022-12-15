@@ -1,18 +1,28 @@
 import type { WebClient } from '@slack/web-api'
 import type { BillingConfig } from '../../controllers/billing'
+import { SystemStatus } from '../../controllers/system'
 import { ENV_disableStripeBilling } from '../../utils/env'
 import { getNotionPageUrl } from '../../utils/links'
+import { genBooleanEmoji } from '../../utils/messages'
 
 export const NOTION_AUTH_BUTTON_CLICKED = 'notion_auth_button_clicked'
 export const NOTION_SETUP_PAGE_ID_BUTTON_CLICKED = 'notion_setup_page_id_button'
 
 export const BILLING_BUTTON_CLICKED = 'billing_button_clicked'
 
-export async function createAppHome(
-  client: WebClient,
-  userId: string,
-  notionConnectUrl: string,
-) {
+export interface CreateAppHomeArgs {
+  client: WebClient
+  userId: string
+  notionConnectUrl: string
+  systemStatus: SystemStatus
+}
+
+export async function createAppHome({
+  client,
+  userId,
+  notionConnectUrl,
+  systemStatus,
+}: CreateAppHomeArgs) {
   return await client.views.publish({
     user_id: userId,
     view: {
@@ -32,6 +42,44 @@ export async function createAppHome(
             type: 'plain_text',
             text: `Welcome to Kami. We aspire to keep information out of the deep abyss of Slack.`,
             emoji: true,
+          },
+        },
+        {
+          type: 'divider',
+        },
+        {
+          type: 'header',
+          text: {
+            type: 'plain_text',
+            text: 'System status 🤖',
+            emoji: true,
+          },
+        },
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `Notion integration: ${genBooleanEmoji(
+              systemStatus.notionStatus,
+            )}`,
+          },
+        },
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `Notion page selected: ${genBooleanEmoji(
+              systemStatus.rootPageStatus,
+            )}`,
+          },
+        },
+        {
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `Billing configured: ${genBooleanEmoji(
+              systemStatus.billingStatus,
+            )}`,
           },
         },
         {

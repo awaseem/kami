@@ -77,3 +77,7 @@ export function cleanSlackReplies(replies: SlackReply[]): string[] {
       .filter(Boolean) as string[]
   )
 }
+
+export function genBooleanEmoji(bool: boolean): string {
+  return bool ? '✅' : '❌'
+}
