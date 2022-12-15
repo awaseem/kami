@@ -1,4 +1,5 @@
 import type Stripe from 'stripe'
+import { ChatContext } from '../contexts/chat'
 import { BillingModel, BillingSubscriptionObj } from '../models/billing'
 import { ControllerError } from '../utils/error'
 import { getAppLink } from '../utils/links'
@@ -23,7 +24,7 @@ export function createBillingController(billingModel: BillingModel) {
     )
   }
 
-  async function configureBilling(teamId: string) {
+  async function configureBilling(teamId: string, userId: string) {
     const homeDeepLink = getAppLink()
 
     const subscription = await billingModel.getBillingSubscription(teamId)
@@ -48,6 +49,7 @@ export function createBillingController(billingModel: BillingModel) {
 
     const url = await billingModel.createSubscription(
       teamId,
+      userId,
       homeDeepLink,
       homeDeepLink,
     )
@@ -76,6 +78,7 @@ export function createBillingController(billingModel: BillingModel) {
     data: any,
     sig: string,
     endpointSecret: string,
+    chat: ChatContext,
   ) {
     const event = billingModel.getStripeEvent(data, sig, endpointSecret)
 
@@ -102,6 +105,15 @@ export function createBillingController(billingModel: BillingModel) {
         subscriptionId,
         subscriptionItemId,
       })
+
+      const userId = subscription.metadata.userId
+      if (userId) {
+        await chat.sendDirectMessage(
+          teamId,
+          userId,
+          '✅ Billing is configured correctly. Thank you for the subscription',
+        )
+      }
       return
     }
 

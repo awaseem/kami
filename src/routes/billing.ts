@@ -1,11 +1,13 @@
 import type { ExpressReceiver } from '@slack/bolt'
 import bodyParser from 'body-parser'
+import { CustomContext } from '../contexts'
 import { BillingController } from '../controllers/billing'
 import { ENV_stripeEndpointSecret } from '../utils/env'
 
 export function createBillingRoute(
   receiver: ExpressReceiver,
   billingController: BillingController,
+  context: CustomContext,
 ) {
   receiver.router.post(
     '/billing/webhook',
@@ -16,7 +18,12 @@ export function createBillingRoute(
       const endpointSecret = ENV_stripeEndpointSecret
 
       try {
-        await billingController.handleStripeEvents(event, sig, endpointSecret)
+        await billingController.handleStripeEvents(
+          event,
+          sig,
+          endpointSecret,
+          context.chat,
+        )
         res.status(201).send()
       } catch (err) {
         const errorMessage = (err as Error).message

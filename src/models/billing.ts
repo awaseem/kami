@@ -18,11 +18,13 @@ const billingStore = createRedisStore('billing|subscription')
 
 async function createSubscription(
   teamId: string,
+  userId: string,
   successUrl: string,
   cancelUrl: string,
 ) {
   const metadata = {
     teamId,
+    userId,
   }
 
   const { url } = await stripe.checkout.sessions.create({

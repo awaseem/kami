@@ -2,6 +2,8 @@ import { App, Installation } from '@slack/bolt'
 import { logWarn } from '../utils/logger'
 import { SlackModel } from '../models/slack'
 
+export type ChatContext = ReturnType<typeof createChatContext>
+
 export function createChatContext(app: App, slackModel: SlackModel) {
   // Use this method for sending messages when not listening to events or where the WebClient isn't available
   async function sendDirectMessage(

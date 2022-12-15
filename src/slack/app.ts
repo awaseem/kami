@@ -30,7 +30,7 @@ export function createSlackApp() {
   // Register routes
   createSystemRouter(receiver)
   createNotionAuthRoute(receiver, controllers.auth, context)
-  createBillingRoute(receiver, controllers.billing)
+  createBillingRoute(receiver, controllers.billing, context)
 
   // Register app home and settings
   createAppHomeHandlers(app, controllers)
