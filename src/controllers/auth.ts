@@ -3,6 +3,8 @@ import { AccessTokenModel } from '../models/accessTokens'
 import { NotionModel } from '../models/notion'
 import { SlackModel } from '../models/slack'
 
+export type AuthController = ReturnType<typeof createAuthController>
+
 export function createAuthController(
   notionModel: NotionModel,
   accessTokenModel: AccessTokenModel,
@@ -10,6 +12,11 @@ export function createAuthController(
 ) {
   function getNotionSetupUrl(teamId: string, userId: string) {
     return notionModel.getNotionOauthUrl(teamId, userId)
+  }
+
+  async function notionTokenExchange(teamId: string, code: string) {
+    const accessToken = await notionModel.oauthExchange(code)
+    await accessTokenModel.notion.setAccessToken(teamId, accessToken)
   }
 
   async function removeAllAppData(teamId: string) {
@@ -75,5 +82,6 @@ export function createAuthController(
     getInstall,
     deleteInstall,
     removeAllAppData,
+    notionTokenExchange,
   })
 }

@@ -1,6 +1,5 @@
 import { ExpressReceiver } from '@slack/bolt'
 import { Controllers } from '../controllers'
-import { Models } from '../models'
 import {
   ENV_slackClientId,
   ENV_slackClintSecret,
@@ -9,7 +8,7 @@ import {
 } from '../utils/env'
 import { SLACK_SCOPES } from '../utils/slack'
 
-export function createRouter(models: Models, controllers: Controllers) {
+export function createRouter(controllers: Controllers) {
   const receiver = new ExpressReceiver({
     clientId: ENV_slackClientId,
     clientSecret: ENV_slackClintSecret,

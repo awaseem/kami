@@ -15,9 +15,8 @@ import { createNotionAuthRoute } from '../routes/notion/auth'
 export function createSlackApp() {
   const models = createModels()
   const controllers = createControllers(models)
-  const middlewares = createMiddlewares(controllers.billing)
 
-  const receiver = createRouter(models, controllers)
+  const receiver = createRouter(controllers)
   const app = new App({
     receiver,
   })
@@ -25,9 +24,12 @@ export function createSlackApp() {
   // Crete contexts
   const context = createContext(app, models)
 
+  // Create middlewares
+  const middlewares = createMiddlewares(controllers.billing)
+
   // Register routes
   createSystemRouter(receiver)
-  createNotionAuthRoute(receiver, models, context)
+  createNotionAuthRoute(receiver, controllers.auth, context)
   createBillingRoute(receiver, controllers.billing)
 
   // Register app home and settings

@@ -1,11 +1,11 @@
 import type { ExpressReceiver } from '@slack/bolt'
 import { CustomContext } from '../../contexts'
-import { Models } from '../../models'
+import { AuthController } from '../../controllers/auth'
 import { getAppLink } from '../../utils/links'
 
 export function createNotionAuthRoute(
   receiver: ExpressReceiver,
-  models: Models,
+  authController: AuthController,
   context: CustomContext,
 ) {
   receiver.router.get('/auth/notion', async (req, res) => {
@@ -18,8 +18,7 @@ export function createNotionAuthRoute(
     const stateStr = state.toString()
     const [teamId, userId] = stateStr.split('-')
 
-    const accessToken = await models.notion.oauthExchange(code.toString())
-    await models.accessTokens.notion.setAccessToken(teamId, accessToken)
+    await authController.notionTokenExchange(teamId, code.toString())
 
     await context.chat.sendDirectMessage(
       teamId,
