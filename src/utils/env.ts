@@ -20,32 +20,61 @@ export function getEnv<T>(key: string) {
   return process.env[key]
 }
 
-export const ENV_slackClientId = getEnvOrExit('SLACK_CLIENT_ID')
-export const ENV_slackClintSecret = getEnvOrExit('SLACK_CLIENT_SECRET')
-export const ENV_slackSigningSecret = getEnvOrExit('SLACK_SIGNING_SECRET')
-export const ENV_slackStateSecret = getEnvOrExit('SLACK_STATE_SECRET')
+// Hosting your own variables
+export const ENV_disableStripeBilling = getEnv('DISABLE_STRIPE_BILLING')
+export const ENV_notionSecretToken = getEnv('NOTION_SECRET_TOKEN')
+export const ENV_slackSecretToken = getEnv('SLACK_SECRET_TOKEN')
 
-export const ENV_slackAppId = getEnvOrExit('SLACK_APP_ID')
+export const saasBased = !(
+  ENV_disableStripeBilling &&
+  ENV_notionSecretToken &&
+  ENV_slackSecretToken
+)
+
+// production variables
+export const ENV_slackSigningSecret = getEnvOrExit('SLACK_SIGNING_SECRET')
+
+export const ENV_slackClientId = saasBased
+  ? getEnvOrExit('SLACK_CLIENT_ID')
+  : ''
+export const ENV_slackClintSecret = saasBased
+  ? getEnvOrExit('SLACK_CLIENT_SECRET')
+  : ''
+export const ENV_slackStateSecret = saasBased
+  ? getEnvOrExit('SLACK_STATE_SECRET')
+  : ''
+export const ENV_slackAppId = saasBased ? getEnvOrExit('SLACK_APP_ID') : ''
 
 export const ENV_hostname = getEnvOrExit('HOST_NAME')
 export const ENV_port = getEnvOrExit('PORT')
 
-export const ENV_notionAuthUrl = getEnvOrExit('NOTION_AUTH_URL')
-export const ENV_notionRedirectUrl = getEnvOrExit('NOTION_REDIRECT_URL')
+export const ENV_notionOauthClientId = getEnvOrExit('NOTION_OAUTH_CLIENT_ID')
+export const ENV_notionOauthClientSecret = getEnvOrExit(
+  'NOTION_OAUTH_CLIENT_SECRET',
+)
+export const ENV_notionAuthUrl = saasBased
+  ? getEnvOrExit('NOTION_AUTH_URL')
+  : ''
+export const ENV_notionRedirectUrl = saasBased
+  ? getEnvOrExit('NOTION_REDIRECT_URL')
+  : ''
+
 export const ENV_redisUrl = getEnvOrExit('REDIS_URL')
 export const ENV_redisToken = getEnvOrExit('REDIS_TOKEN')
 
 export const ENV_openApiKey = getEnvOrExit('OPEN_AI_API_KEY')
 
-export const ENV_disableStripeBilling = getEnv('DISABLE_STRIPE_BILLING')
-
-export const ENV_stripeKey = getEnvOrExit('STRIPE_TOKEN')
-export const ENV_stripePricing = getEnvOrExit('STRIPE_PRICING_ID')
-export const ENV_stripeEndpointSecret = getEnvOrExit('STRIPE_ENDPOINT_SECRET')
+export const ENV_stripeKey = saasBased ? getEnvOrExit('STRIPE_TOKEN') : ''
+export const ENV_stripePricing = saasBased
+  ? getEnvOrExit('STRIPE_PRICING_ID')
+  : ''
+export const ENV_stripeEndpointSecret = saasBased
+  ? getEnvOrExit('STRIPE_ENDPOINT_SECRET')
+  : ''
 
 export function getNotionBasicAuth() {
-  const clientID = getEnvOrExit('NOTION_OAUTH_CLIENT_ID')
-  const clientSecret = getEnvOrExit('NOTION_OAUTH_CLIENT_SECRET')
+  const clientID = ENV_notionOauthClientId
+  const clientSecret = ENV_notionOauthClientSecret
   const token = `${clientID}:${clientSecret}`
 
   const base64Encoded = Buffer.from(token).toString('base64')
