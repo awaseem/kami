@@ -35,7 +35,27 @@ Slack → Notion = 💪</p>
 
 # Hosting your own
 
-Coming soon
+To host your own service you only need a few services:
+
+- [Basic bolt js Slack app](https://slack.dev/bolt-js/tutorial/getting-started#tokens-and-installing-apps): You can get the slack secret token and signing secret here by following these [instructions](https://slack.dev/bolt-js/tutorial/getting-started#tokens-and-installing-apps)
+- [Upstash](https://upstash.com/): You can create a free account to host data for Kami
+- [Notion app](https://developers.notion.com/): You'll need to create a new notion integration and copy the `Internal Integration Token`
+- [Open AI](https://openai.com/api/): Personal Open AI token
+
+```
+docker run \
+-it --rm -d \
+--name kami \
+-p 9000:9000 \
+-e DISABLE_STRIPE_BILLING=true \
+-e NOTION_SECRET_TOKEN=<notion_internal_integration_token> \
+-e SLACK_SECRET_TOKEN=<slack_bot_app_token> \
+-e SLACK_SIGNING_SECRET=<slack_signing_secret> \
+-e OPEN_AI_API_KEY=<open_ai_token> \
+-e REDIS_URL=<upstash_app_url_client*@upstash/redis> \
+-e REDIS_TOKEN=<upstash_app_password_client*@upstash/redis> \
+ghcr.io/awaseem/kami:latest
+```
 
 # Getting started
 
@@ -50,11 +70,13 @@ Kami requires a few third party services to work properly. You need to have the 
 Core slack framework. You'll need the following information:
 
 ```
+
 SLACK_APP_ID="<slack app i>"
 SLACK_CLIENT_ID="<slack client id>"
 SLACK_CLIENT_SECRET="<slack client secret>"
 SLACK_SIGNING_SECRET="<slack sighing secret>"
 SLACK_STATE_SECRET="shhh!"
+
 ```
 
 ### [Notion app](https://developers.notion.com/)
@@ -62,10 +84,12 @@ SLACK_STATE_SECRET="shhh!"
 Allow integration from within Notion
 
 ```
+
 NOTION_AUTH_URL="https://api.notion.com/v1/oauth/authorize?client_id=<NOTION_CLIENT_ID>&response_type=code&owner=user"
 NOTION_OAUTH_CLIENT_ID="<NOTION_CLIENT_ID>"
 NOTION_OAUTH_CLIENT_SECRET="<NOTION_OAUTH_CLIENT_SECRET>"
 NOTION_REDIRECT_URL="https://<HOST_NAME>/auth/notion"
+
 ```
 
 ### [Upstash](https://upstash.com/)
@@ -73,8 +97,10 @@ NOTION_REDIRECT_URL="https://<HOST_NAME>/auth/notion"
 Used for storing the state of the app:
 
 ```
+
 REDIS_URL="<Upstash app url for the client: @upstash/redis>"
 REDIS_TOKEN="<Upstash app password for the client: @upstash/redis>"
+
 ```
 
 ### [Open AI](https://openai.com/api/)
@@ -82,7 +108,9 @@ REDIS_TOKEN="<Upstash app password for the client: @upstash/redis>"
 Used for generating AI content
 
 ```
+
 OPEN_AI_API_KEY="<Open AI token>"
+
 ```
 
 ### [Stripe](https://stripe.com)
@@ -90,9 +118,11 @@ OPEN_AI_API_KEY="<Open AI token>"
 Used for collecting billing, you can disable this by passing `DISABLE_STRIPE_BILLING="true"`. If you want to continue with billing, provide the following:
 
 ```
+
 STRIPE_TOKEN="<STRIPE_API_TOKEN>"
 STRIPE_PRICING_ID="<STRIPE_PRICING_ID>
 STRIPE_ENDPOINT_SECRET="<STRIPE_ENDPOINT_SECRET>"
+
 ```
 
 ### Final `.env` file
@@ -100,6 +130,7 @@ STRIPE_ENDPOINT_SECRET="<STRIPE_ENDPOINT_SECRET>"
 After all those pre-requisites accounts and secrets have been added, this is what your final `.env` file should look like:
 
 ```
+
 SLACK_APP_ID="<slack app i>"
 SLACK_CLIENT_ID="<slack client id>"
 SLACK_CLIENT_SECRET="<slack client secret>"
@@ -117,9 +148,11 @@ REDIS_TOKEN="<Upstash app password for the client: @upstash/redis>"
 OPEN_AI_API_KEY="<Open AI token>"
 
 # DISABLE_STRIPE_BILLING="true"
+
 STRIPE_TOKEN="<STRIPE_API_TOKEN>"
 STRIPE_PRICING_ID="<STRIPE_PRICING_ID>
 STRIPE_ENDPOINT_SECRET="<STRIPE_ENDPOINT_SECRET>"
+
 ```
 
 ## Running the app
@@ -127,7 +160,9 @@ STRIPE_ENDPOINT_SECRET="<STRIPE_ENDPOINT_SECRET>"
 To run the app, just use the following command:
 
 ```
+
 npm run dev
+
 ```
 
 You'll also need to forward your localhost by either using [ngrok](https://ngrok.com/) or [cloudflare tunnels](https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/install-and-setup/tunnel-guide/)
@@ -137,7 +172,9 @@ You'll also need to forward your localhost by either using [ngrok](https://ngrok
 To run tests, simply run the following command:
 
 ```
+
 npm run test
+
 ```
 
 ## Linting
@@ -145,7 +182,9 @@ npm run test
 Check if your code is up to the linting standard, run the following command:
 
 ```
+
 npm run lint
+
 ```
 
 # Contributing
@@ -160,3 +199,7 @@ Have fun and don't be afraid to reach out for any questions or concerns.
 # License
 
 This project is open source and available under the [MIT License.](https://github.com/awaseem/kami/blob/main/LICENSE)
+
+```
+
+```
