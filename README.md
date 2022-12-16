@@ -199,7 +199,3 @@ Have fun and don't be afraid to reach out for any questions or concerns.
 # License
 
 This project is open source and available under the [MIT License.](https://github.com/awaseem/kami/blob/main/LICENSE)
-
-```
-
-```
