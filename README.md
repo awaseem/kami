@@ -39,6 +39,8 @@ Coming soon
 
 # Getting started
 
+If you'd like to run a local version similar or exactly like production, these are all the steps required.
+
 ## Pre-requisites
 
 Kami requires a few third party services to work properly. You need to have the following accounts setup and create a `.env` file with the following variables:
