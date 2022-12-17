@@ -29,24 +29,20 @@ export const saasBased = !(ENV_disableStripeBilling && ENV_notionSecretToken)
 // production variables
 export const ENV_slackSigningSecret = getEnvOrExit('SLACK_SIGNING_SECRET')
 
-export const ENV_slackClientId = saasBased
-  ? getEnvOrExit('SLACK_CLIENT_ID')
-  : ''
-export const ENV_slackClintSecret = saasBased
-  ? getEnvOrExit('SLACK_CLIENT_SECRET')
-  : ''
-export const ENV_slackStateSecret = saasBased
-  ? getEnvOrExit('SLACK_STATE_SECRET')
-  : ''
-export const ENV_slackAppId = saasBased ? getEnvOrExit('SLACK_APP_ID') : ''
+export const ENV_slackClientId = getEnvOrExit('SLACK_CLIENT_ID')
+export const ENV_slackClintSecret = getEnvOrExit('SLACK_CLIENT_SECRET')
+export const ENV_slackStateSecret = getEnvOrExit('SLACK_STATE_SECRET')
+export const ENV_slackAppId = getEnvOrExit('SLACK_APP_ID')
 
 export const ENV_hostname = getEnvOrExit('HOST_NAME')
-export const ENV_port = getEnvOrExit('PORT')
+export const ENV_port = getEnv('PORT') ?? '9000'
 
-export const ENV_notionOauthClientId = getEnvOrExit('NOTION_OAUTH_CLIENT_ID')
-export const ENV_notionOauthClientSecret = getEnvOrExit(
-  'NOTION_OAUTH_CLIENT_SECRET',
-)
+export const ENV_notionOauthClientId = saasBased
+  ? getEnvOrExit('NOTION_OAUTH_CLIENT_ID')
+  : ''
+export const ENV_notionOauthClientSecret = saasBased
+  ? getEnvOrExit('NOTION_OAUTH_CLIENT_SECRET')
+  : ''
 export const ENV_notionAuthUrl = saasBased
   ? getEnvOrExit('NOTION_AUTH_URL')
   : ''
