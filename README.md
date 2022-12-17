@@ -37,24 +37,24 @@ Slack → Notion = 💪</p>
 
 To host your own service you only need a few services:
 
-- [Basic bolt js Slack app](https://slack.dev/bolt-js/tutorial/getting-started#tokens-and-installing-apps): You can get the slack secret token and signing secret here by following these [instructions](https://slack.dev/bolt-js/tutorial/getting-started#tokens-and-installing-apps)
+- [Basic bolt js Slack app](https://slack.dev/bolt-js/tutorial/getting-started#tokens-and-installing-apps): You can get the slack secret token and signing secret here by following these [instructions](https://slack.dev/bolt-js/tutorial/getting-started#tokens-and-installing-apps). You can use `slack.manifest.yml` to create the app, but need to define an URL exposed to the internet for the bot to receive events.
 - [Upstash](https://upstash.com/): You can create a free account to host data for Kami
 - [Notion app](https://developers.notion.com/): You'll need to create a new notion integration and copy the `Internal Integration Token`
 - [Open AI](https://openai.com/api/): Personal Open AI token
 
 ```
 docker run \
--it --rm -d \
---name kami \
--p 9000:9000 \
--e DISABLE_STRIPE_BILLING=true \
--e NOTION_SECRET_TOKEN=<notion_internal_integration_token> \
--e SLACK_SECRET_TOKEN=<slack_bot_app_token> \
--e SLACK_SIGNING_SECRET=<slack_signing_secret> \
--e OPEN_AI_API_KEY=<open_ai_token> \
--e REDIS_URL=<upstash_app_url_client*@upstash/redis> \
--e REDIS_TOKEN=<upstash_app_password_client*@upstash/redis> \
-ghcr.io/awaseem/kami:latest
+  -it --rm -d \
+  --name kami \
+  -p 9000:9000 \
+  -e DISABLE_STRIPE_BILLING=true \
+  -e NOTION_SECRET_TOKEN=<notion_internal_integration_token> \
+  -e SLACK_SECRET_TOKEN=<slack_bot_app_token> \
+  -e SLACK_SIGNING_SECRET=<slack_signing_secret> \
+  -e OPEN_AI_API_KEY=<open_ai_token> \
+  -e REDIS_URL=<upstash_app_url_client*@upstash/redis> \
+  -e REDIS_TOKEN=<upstash_app_password_client*@upstash/redis> \
+  ghcr.io/awaseem/kami:latest
 ```
 
 # Getting started

@@ -23,13 +23,8 @@ export function getEnv<T>(key: string) {
 // Hosting your own variables
 export const ENV_disableStripeBilling = getEnv('DISABLE_STRIPE_BILLING')
 export const ENV_notionSecretToken = getEnv('NOTION_SECRET_TOKEN')
-export const ENV_slackSecretToken = getEnv('SLACK_SECRET_TOKEN')
 
-export const saasBased = !(
-  ENV_disableStripeBilling &&
-  ENV_notionSecretToken &&
-  ENV_slackSecretToken
-)
+export const saasBased = !(ENV_disableStripeBilling && ENV_notionSecretToken)
 
 // production variables
 export const ENV_slackSigningSecret = getEnvOrExit('SLACK_SIGNING_SECRET')
