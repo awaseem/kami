@@ -24,14 +24,26 @@ features:
       type: message
       callback_id: create_acronym_message_shortcut
       description: Detect and create a new acronym from the message
-    - name: Search acronym
+    - name: Create/update FAQ
+      type: message
+      callback_id: create_faq_message_shortcutapa
+      description: Create or update a FAQ based on thread message
+    - name: '[Open AI] Create page'
+      type: global
+      callback_id: create_page_prompt_global
+      description: 'Create a page from a simple prompt'
+    - name: 'Search acronym'
       type: global
       callback_id: define_acronym_global
-      description: Search a acronym based on an input
-    - name: Create new acronym
+      description: 'Search a acronym based on an input'
+    - name: 'Create new acronym'
       type: global
       callback_id: define_acronym
-      description: Create a new acronym
+      description: 'Create a new acronym'
+    - name: '[Open AI] Summarize'
+      type: global
+      callback_id: create_summary_page_message
+      description: 'Create a summary and outcomes page from thread'
 oauth_config:
   redirect_urls:
     - https://bot.getkami.app/slack/oauth_redirect
