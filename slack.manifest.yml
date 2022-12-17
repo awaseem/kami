@@ -46,7 +46,7 @@ features:
       description: 'Create a summary and outcomes page from thread'
 oauth_config:
   redirect_urls:
-    - https://bot.getkami.app/slack/oauth_redirect
+    - https://<YOUR_HOST_NAME>/slack/oauth_redirect
   scopes:
     bot:
       - chat:write
@@ -58,7 +58,7 @@ oauth_config:
       - reactions:read
 settings:
   event_subscriptions:
-    request_url: https://bot.getkami.app/slack/events
+    request_url: https://<YOUR_HOST_NAME>/slack/events
     bot_events:
       - app_home_opened
       - app_uninstalled
@@ -69,7 +69,7 @@ settings:
       - reaction_added
   interactivity:
     is_enabled: true
-    request_url: https://bot.getkami.app/slack/events
+    request_url: https://<YOUR_HOST_NAME>/slack/events
   org_deploy_enabled: false
   socket_mode_enabled: false
   token_rotation_enabled: true
