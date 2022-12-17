@@ -39,7 +39,7 @@ To host your own service you only need a few services:
 
 - [Create Slack app](https://api.slack.com/apps): Create a new slack app, you should use `slack.manifest.yml` to ensure all the proper shortcuts and permissions are set. You also need to define an URL exposed to the internet for the bot to receive events (Localhost URLs will not work!).
 - [Upstash](https://upstash.com/): You can create a free account to host data for Kami
-- [Notion app](https://developers.notion.com/): You'll need to create a new notion integration and copy the `Internal Integration Token`
+- [Notion app](https://developers.notion.com/): You'll need to create a new notion integration and copy the `Internal Integration Token`. Make sure the root page you select for your local Kami instances has access for new notion integration. You can give access by the following [guide](https://www.notion.so/help/add-and-manage-connections-with-the-api#add-connections-to-pages)
 - [Open AI](https://openai.com/api/): Personal Open AI token
 
 ```
