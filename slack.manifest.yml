@@ -1,5 +1,5 @@
 display_information:
-  name: Kami
+  name: Kami (Local)
   description: 📚 Keep your team's knowledge organized. Slack → Notion = 💪
   background_color: '#000000'
   long_description: Kami is a tool that allows users to create acronyms from Slack messages and store them in their organization's Notion. Kami also allows users to search and define acronyms within messages on Notion. Additionally, Kami can be used to store answers for frequently asked questions within Slack threads in Notion, as well as automatically search for and try to solve new questions in a channel using the stored FAQs. Kami also has the ability to summarize long Slack threads using Open AI and generate new Notion pages and Slack messages (coming soon) with simple prompts. Kami is open source with an MIT license.
