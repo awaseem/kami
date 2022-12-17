@@ -1,7 +1,10 @@
 import type { WebClient } from '@slack/web-api'
 import type { BillingConfig } from '../../controllers/billing'
 import { SystemStatus } from '../../controllers/system'
-import { ENV_disableStripeBilling } from '../../utils/env'
+import {
+  ENV_disableStripeBilling,
+  ENV_notionSecretToken,
+} from '../../utils/env'
 import { getNotionPageUrl } from '../../utils/links'
 import { genBooleanEmoji } from '../../utils/messages'
 
@@ -97,19 +100,24 @@ export async function createAppHome({
           type: 'section',
           text: {
             type: 'mrkdwn',
-            text: 'Please continue the integration with notion before continuing.',
+            text: ENV_notionSecretToken
+              ? 'Notion client is configured through environment variable `NOTION_SECRET_TOKEN`'
+              : 'Please continue the integration with notion before continuing.',
           },
-          accessory: {
-            type: 'button',
-            text: {
-              type: 'plain_text',
-              text: 'Connect Notion',
-              emoji: true,
+
+          ...(!ENV_notionSecretToken && {
+            accessory: {
+              type: 'button',
+              text: {
+                type: 'plain_text',
+                text: 'Connect Notion',
+                emoji: true,
+              },
+              value: 'click_notion',
+              url: notionConnectUrl,
+              action_id: NOTION_AUTH_BUTTON_CLICKED,
             },
-            value: 'click_notion',
-            url: notionConnectUrl,
-            action_id: NOTION_AUTH_BUTTON_CLICKED,
-          },
+          }),
         },
         {
           type: 'section',
